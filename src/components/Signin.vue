@@ -32,6 +32,21 @@
             </v-flex>
             <v-flex class="text-xs-center" mt-5>
               <v-btn color="primary" type="submit">Sign In</v-btn>
+              <span>
+                Or
+              </span>
+            </v-flex>
+            <v-flex>
+              <button id="login" @click="showModal = true">Penis</button>
+              <!-- use the modal component, pass in the prop -->
+              <modal v-if="showModal" @close="showModal = false">
+                <!--
+                  you can use custom content here to overwrite
+                  default content
+                -->
+                <h3 slot="header">Google Signin
+                </h3>
+              </modal>
             </v-flex>
           </v-layout>
         </form>
