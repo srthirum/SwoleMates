@@ -5,9 +5,12 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import { store } from './store'
 import firebase from 'firebase'
+import VueFire from 'vuefire'
 
 Vue.use(Vuetify)
-firebase.initializeApp({
+Vue.use(VueFire)
+
+let app = firebase.initializeApp({
   apiKey: 'AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE',
   authDomain: 'swolemates-276ca.firebaseapp.com',
   databaseURL: 'https://swolemates-276ca.firebaseio.com',
@@ -15,7 +18,6 @@ firebase.initializeApp({
   storageBucket: 'swolemates-276ca.appspot.com',
   messagingSenderId: '816721714419'
 })
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
@@ -34,3 +36,4 @@ const unsubscribe = firebase.auth()
   })
   unsubscribe()
 })
+export const db = app.firestore()

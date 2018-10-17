@@ -56,6 +56,7 @@
 
 <script>
   export default {
+    name: 'app',
     data () {
       return {
         // appTitle: 'Awesome App',
@@ -77,7 +78,8 @@
       menuItems () {
         if (this.isAuthenticated) {
           return [
-            { title: 'Home', path: '/home', icon: 'home' }
+            { title: 'Home', path: '/home', icon: 'home' },
+            { title: 'Nutrition Info', path: '/nutritionUpload', icon: 'kitchen' }
           ]
         } else {
           return [
