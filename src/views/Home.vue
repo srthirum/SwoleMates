@@ -13,8 +13,9 @@
         </post-progress-pic-item>
         
         <progress-pic-item 
-          v-for='n in 4'
-          :key='n'
+          v-for='item in progressPicItems'
+          :key='item.id'
+          :item="item"
         >
         </progress-pic-item>
       </v-flex>
@@ -24,6 +25,7 @@
 
 <script>
 
+import { fsdb } from '../main.js'
 import ProgressPicItem from '../components/ProgressPicItem.vue'
 import PostProgressPicItem from '../components/PostProgressPicItem.vue'
 
@@ -31,6 +33,14 @@ export default {
   components: {
     ProgressPicItem,
     PostProgressPicItem
+  },
+  data () {
+    return {
+      progressPicItems: []
+    }
+  },
+  firestore: {
+    progressPicItems: fsdb.collection('progress pic item')
   }
 }
 </script>
