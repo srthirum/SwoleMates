@@ -30,6 +30,13 @@
             </v-flex>
           </v-layout>
         </form>
+        <ul>
+          <li v-for="meal in mealEntries">
+            <p>
+              Meal: {{ meal.food }}, Calories: {{ meal.calories }}
+            </p>
+          </li>
+        </ul>
       </v-flex>
     </v-layout>
   </v-container>
@@ -42,17 +49,20 @@ export default {
 		return {
 			food: '',
 			calories: '',
-			alert: false
+			alert: false,
+      mealEntries: []
 		}
 	},
   firestore: {
-    meals: db.collection('meals')
+    meals: db.collection('meals'),
+    mealEntries: db.collection('meals')
   },
 	methods: {
 		uploadNutrition () {
 			this.$firestoreRefs.meals.add({
         food: this.food,
-        calories: this.calories
+        calories: this.calories,
+        user: this.$store.state.user
       })
       this.food = '';
       this.calories = 0;
@@ -62,7 +72,10 @@ export default {
 	computed: {
 		loading () {
 			return this.$store.state.loading
-		}
+		},
+    mealEntries () {
+      return this.$firestoreRefs.meals.get();
+    }
 	}
 }
 </script>
