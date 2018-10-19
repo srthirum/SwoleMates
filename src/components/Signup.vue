@@ -1,4 +1,5 @@
 /* eslint-disable */
+
 <template>
   <v-container fluid>
     <v-layout row wrap>
@@ -50,8 +51,8 @@
       </v-flex>
     </v-layout>
 
-    <v-flex xs12 sm6 offset-sm3 mt-3>
-      <form @submit.prevent="userSignUp">
+    <!--<v-flex xs12 sm6 offset-sm3 mt-3>
+      <form @submit.prevent="googleOauthSignUp">
       <v-layout column>
         <v-flex>
           <v-alert type="error" dismissible v-model="alert">
@@ -64,12 +65,14 @@
       </v-layout>
       </form>
     </v-flex>
+  -->
   </v-container>
 </template>
 
 <script>
-export default {
 // import firebaseui from 'firebaseui'
+// import firebase from 'firebase'
+export default {
 
   data () {
     return {
@@ -98,10 +101,20 @@ export default {
       this.$store.dispatch('userSignUp', { email: this.email, password: this.password })
     },
 
-    googleOauthSignUp () {
-
-    }
     /*
+    googleOauthSignUp () {
+      // commit('setLoading', true)
+      var uiConfig = {
+        signInFlow: 'popup',
+        signInOptions: [
+          // Leave the lines as is for the providers you want to offer your users.
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID
+        ]}
+      // Initialize the FirebaseUI Widget using Firebase.
+      var ui = new firebaseui.auth.AuthUI(firebase.auth())
+      // The start method will wait until the DOM is loaded.
+      ui.start('#firebaseui-auth-container', uiConfig)
+    }
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
     commit('setLoading', true)
     var uiConfig = {

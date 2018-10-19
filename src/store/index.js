@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import firebase from 'firebase'
 import router from '@/router'
+import firebaseui from 'firebaseui'
 
 Vue.use(Vuex)
 
@@ -37,6 +38,21 @@ export const store = new Vuex.Store({
         commit('setLoading', false)
       })
     },
+    /*
+    googleOauthSignUp ({commit}, payload) {
+      commit('setLoading', true)
+      var uiConfig = {
+        signInFlow: 'popup',
+        signInOptions: [
+          // Leave the lines as is for the providers you want to offer your users.
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID
+        ]}
+      // Initialize the FirebaseUI Widget using Firebase.
+      var ui = new firebaseui.auth.AuthUI(firebase.auth())
+      // The start method will wait until the DOM is loaded.
+      ui.start('#firebaseui-auth-container', uiConfig)
+    },
+    */
     userSignIn ({commit}, payload) {
       commit('setLoading', true)
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
