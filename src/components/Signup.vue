@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <v-container fluid>
     <v-layout row wrap>
@@ -48,12 +49,27 @@
         </form>
       </v-flex>
     </v-layout>
+
+    <v-flex xs12 sm6 offset-sm3 mt-3>
+      <form @submit.prevent="userSignUp">
+      <v-layout column>
+        <v-flex>
+          <v-alert type="error" dismissible v-model="alert">
+            {{ error }}
+          </v-alert>
+        </v-flex>
+      <v-flex class="text-xs-center" mt-5>
+        <v-btn color="secondary" type="submit" :disabled="loading">Sign Up with Google</v-btn>
+      </v-flex>
+      </v-layout>
+      </form>
+    </v-flex>
   </v-container>
 </template>
 
 <script>
 export default {
-import firebaseui from 'firebaseui'
+// import firebaseui from 'firebaseui'
 
   data () {
     return {
@@ -80,8 +96,12 @@ import firebaseui from 'firebaseui'
         return
       }
       this.$store.dispatch('userSignUp', { email: this.email, password: this.password })
-    }
+    },
 
+    googleOauthSignUp () {
+
+    }
+    /*
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
     commit('setLoading', true)
     var uiConfig = {
@@ -107,7 +127,7 @@ import firebaseui from 'firebaseui'
       ]
     }
     ui.start('#firebaseui-auth-container', uiConfig);
-
+    */
   },
   watch: {
     error (value) {
