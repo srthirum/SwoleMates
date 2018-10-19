@@ -49,9 +49,8 @@
         </form>
       </v-flex>
     </v-layout>
-
     <v-flex xs12 sm6 offset-sm3 mt-3>
-      <form @submit.prevent="userSignUp">
+      <form @submit.prevent="googleOauthSignUp">
       <v-layout column>
         <v-flex>
           <v-alert type="error" dismissible v-model="alert">
@@ -59,7 +58,7 @@
           </v-alert>
         </v-flex>
       <v-flex class="text-xs-center" mt-5>
-        <v-btn color="secondary" type="submit" :disabled="loading">Sign Up with Google</v-btn>
+        <v-btn color="blue" type="submit" :disabled="loading">Sign Up with Google</v-btn>
       </v-flex>
       </v-layout>
       </form>
@@ -68,8 +67,9 @@
 </template>
 
 <script>
-export default {
 // import firebaseui from 'firebaseui'
+// import firebase from 'firebase'
+export default {
 
   data () {
     return {
@@ -99,7 +99,7 @@ export default {
     },
 
     googleOauthSignUp () {
-
+      this.$store.dispatch('googleOauthSignUp', {})
     }
     /*
     var ui = new firebaseui.auth.AuthUI(firebase.auth());
@@ -125,9 +125,7 @@ export default {
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         firebase.auth.EmailAuthProvider.PROVIDER_ID
       ]
-    }
-    ui.start('#firebaseui-auth-container', uiConfig);
-    */
+    } */
   },
   watch: {
     error (value) {

@@ -4,6 +4,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import firebase from 'firebase'
 import router from '@/router'
+import firebaseui from 'firebaseui'
 
 Vue.use(Vuex)
 
@@ -30,11 +31,9 @@ export const store = new Vuex.Store({
     }
   },
   actions: {
+    // user email signup
     userSignUp ({commit}, payload) {
-    }
-
-
-      /*firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
+      firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
         commit('setUser', {email: firebaseUser.user.email})
         commit('setLoading', false)
@@ -43,9 +42,30 @@ export const store = new Vuex.Store({
       .catch(error => {
         commit('setError', error.message)
         commit('setLoading', false)
-      })*/
+      })
     },
-
+    // google Oauth signup
+    googleOauthSignUp ({commit}, payload) {
+      commit('setLoading', true)
+      var uiConfig = {
+        signInFlow: 'popup',
+        signInOptions: [
+          {
+            provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+            authMethod: 'https://accounts.google.com',
+            clientId: 816721714419-q2kqeame7c1h5sbfjimheo7c0oddsdld.apps.googleusercontent.com
+          },
+          // Leave the lines as is for the providers you want to offer your users.
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID
+        ],
+        credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
+        }
+      // Initialize the FirebaseUI Widget using Firebase.
+      var ui = new firebaseui.auth.AuthUI(firebase.auth())
+      // The start method will wait until the DOM is loaded.
+      ui.start('#firebaseui-auth-container', uiConfig)
+    },
+    
     userSignIn ({commit}, payload) {
       commit('setLoading', true)
       // firebase authentication login
@@ -83,7 +103,8 @@ export const store = new Vuex.Store({
       firebase.auth().signOut()
       commit('setUser', null)
       router.push('/')
-    },
+    }
+  },
   getters: {
     isAuthenticated (state) {
       return state.user !== null && state.user !== undefined
