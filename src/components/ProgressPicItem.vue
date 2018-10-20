@@ -39,7 +39,7 @@ export default {
     this.getImageUrl()
   },
   firestore: {
-    progressPicItems: fsdb.collection('progress pic item')
+    progressPicItems: fsdb.collection('progress-post')
   },
   computed: {
     photoDate: function () {
@@ -48,33 +48,35 @@ export default {
       }
     }
   },
+  watch: {
+    item: function (newData, oldData) {
+      this.getImageUrl()
+    }
+  },
   methods: {
     deleteItem: function () {
       storage.ref().child(this.item.fileLocation).delete()
-      .then(() => {
-        this.$firestoreRefs.progressPicItems.doc(this.item.id).delete()
-        .catch(function (error) {
-          var errorMsg = 'Error deleting item from database'
-          console.log(errorMsg, error)
-        })
-      })
-      .catch(function (error) {
+      .catch(error => {
         var errorMsg = 'Error deleting image file from storage'
+        console.log(errorMsg, error)
+      })
+      this.$firestoreRefs.progressPicItems.doc(this.item.id).delete()
+      .catch(error => {
+        var errorMsg = 'Error deleting item from database'
         console.log(errorMsg, error)
       })
     },
     getImageUrl: function () {
-      storage.ref().child(this.item.fileLocation).getDownloadURL()
-      .then(url => {
-        // we could use axios or jquery instead
-        var xhr = new XMLHttpRequest()
-        xhr.open('GET', url)
-        this.imageUrl = url
-      })
-      .catch(function (error) {
-        var errorMsg = 'Error downloading image'
-        console.log(errorMsg, error)
-      })
+      if (this.item.fileLocation) {
+        storage.ref().child(this.item.fileLocation).getDownloadURL()
+        .then(url => {
+          this.imageUrl = url
+        })
+        .catch(error => {
+          var errorMsg = 'Error downloading image'
+          console.log(errorMsg, error)
+        })
+      }
     }
   }
 }

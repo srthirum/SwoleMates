@@ -40,7 +40,7 @@ export default {
     }
   },
   firestore: {
-    progressPicItems: fsdb.collection('progress pic item')
+    progressPicItems: fsdb.collection('progress-post')
   }
 }
 </script>

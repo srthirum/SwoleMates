@@ -27,38 +27,44 @@ export default {
     }
   },
   firestore: {
-    progressPicItems: fsdb.collection('progress pic item')
+    progressPicItems: fsdb.collection('progress-post')
   },
   methods: {
     postProgressItem: function () {
-      // TODO use uuid/guid in naming of file to prevent overwrite of files with same name
-      var fileLocationName = this.$store.state.user.email + '/' + this.file.name
-      // upload photo to storage
-      storage.ref().child(fileLocationName).put(this.file)
-      .then(function (snapshot) {
-        postToFirestore(snapshot) // then create the document in firestore
+      // first create item in firestore database
+      this.$firestoreRefs.progressPicItems.add({
+        description: this.photoDescription,
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+        user: this.$store.state.user.email,
+        fileLocation: ''
       })
-      .catch(function (error) {
-        var errorMsg = 'Error uploading file'
-        console.log(errorMsg, error)
+      .then(docRef => {
+        this.photoDescription = ''
+        // then upload the image file
+        uploadFile(docRef.id)
       })
-      var postToFirestore = (file) => {
-        if (this.photoDescription) {
-          this.$firestoreRefs.progressPicItems.add({
-            description: this.photoDescription,
-            created: firebase.firestore.FieldValue.serverTimestamp(),
-            user: this.$store.state.user.email,
-            fileLocation: file.ref.location.path
+      .catch(error => {
+        var errorMsg = 'Error creating post document'
+        console.error(errorMsg, error)
+      })
+
+      var uploadFile = (docId) => {
+        var fileLocationName = docId + '/' + this.file.name
+        storage.ref().child(fileLocationName).put(this.file)
+        .then(snapshot => {
+          // then edit the database item with the file location
+          this.$firestoreRefs.progressPicItems.doc(docId).update({
+            fileLocation: snapshot.ref.location.path
           })
-          .then(docRef => {
-            this.photoDescription = ''
-            // TODO clear file
-          })
-          .catch(function (error) {
-            var errorMsg = 'Error adding document'
+          .catch(error => {
+            var errorMsg = 'Error editing document file location'
             console.error(errorMsg, error)
           })
-        }
+        })
+        .catch(error => {
+          var errorMsg = 'Error uploading file'
+          console.log(errorMsg, error)
+        })
       }
     },
     onFileChange (e) {
