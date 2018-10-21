@@ -1,7 +1,10 @@
+/* eslint-disable */
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import firebase from 'firebase'
 import router from '@/router'
+import firebaseui from 'firebaseui'
 
 Vue.use(Vuex)
 
@@ -25,11 +28,15 @@ export const store = new Vuex.Store({
     },
     setLoading (state, payload) {
       state.loading = payload
+    },
+    // store google API access token for user information
+    setGoogleLoginToken (state, payload){
+      state.GoogleLoginToken = payload
     }
   },
   actions: {
+    // user email signup
     userSignUp ({commit}, payload) {
-      commit('setLoading', true)
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
         commit('setUser', {email: firebaseUser.user.email})
@@ -41,8 +48,11 @@ export const store = new Vuex.Store({
         commit('setLoading', false)
       })
     },
+
     userSignIn ({commit}, payload) {
       commit('setLoading', true)
+      // firebase authentication login
+
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
         commit('setUser', {email: firebaseUser.user.email})
@@ -55,9 +65,6 @@ export const store = new Vuex.Store({
         commit('setLoading', false)
       })
     },
-    // handles google oauth widget signin
-    // hears auth state change and logs user info
-    // then redirects to home
     autoSignIn ({commit}, payload) {
       payload.getIdToken().then(function (Token){
         commit('setUser', {email: payload.email, name: payload.displayName, accessToken: Token})

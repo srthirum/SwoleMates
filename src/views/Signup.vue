@@ -1,3 +1,4 @@
+/* eslint-disable */
 <template>
   <v-container fluid>
     <v-layout row wrap>
@@ -59,7 +60,25 @@
 import GoogleSigninBtn from'./GoogleSigninBtn'
 export default {
   mounted () {
-    GoogleSigninBtn()
+    // create google signin widget
+    var uiConfig = {
+      signInSuccessUrl: '/home',
+      signInFlow: 'popup',
+      // config signin options
+      signInOptions: [
+        {
+          // use google accounts for authentication
+          authMethod: 'https://accounts.google.com',
+          // project ID for google API console
+          clientId: '816721714419-k26nskknfiqssb8meb7jqo4cjlp4q9qe.apps.googleusercontent.com'
+        },
+        // enable google auth as one of the providers
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID
+      ]
+    }
+    // set up and render widget instance
+    var ui = new firebaseui.auth.AuthUI(firebase.auth())
+    ui.start('#firebaseui-auth-container', uiConfig)
   },
   data () {
     return {
@@ -86,6 +105,10 @@ export default {
         return
       }
       this.$store.dispatch('userSignUp', { email: this.email, password: this.password })
+    },
+
+    googleOauthSignUp () {
+      this.$store.dispatch('googleOauthSignUp', {})
     }
   },
   watch: {
