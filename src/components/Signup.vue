@@ -49,28 +49,39 @@
         </form>
       </v-flex>
     </v-layout>
-    <v-flex xs12 sm6 offset-sm3 mt-3>
-      <form @submit.prevent="googleOauthSignUp">
-      <v-layout column>
-        <v-flex>
-          <v-alert type="error" dismissible v-model="alert">
-            {{ error }}
-          </v-alert>
-        </v-flex>
-      <v-flex class="text-xs-center" mt-5>
-        <v-btn color="blue" type="submit" :disabled="loading">Sign Up with Google</v-btn>
-      </v-flex>
-      </v-layout>
-      </form>
+    <v-flex xs12 class="text-xs-center" mt-3>
+      <p style="color:#808080">Or</p>
+      <div id="firebaseui-auth-container"></div>
     </v-flex>
   </v-container>
 </template>
 
 <script>
-// import firebaseui from 'firebaseui'
-// import firebase from 'firebase'
+import firebase from 'firebase'
+import firebaseui from 'firebaseui'
 export default {
-
+  mounted () {
+    // create google signin widget
+    var uiConfig = {
+      signInSuccessUrl: '/home',
+      signInFlow: 'popup',
+      signInOptions: [
+        {
+          // Google provider must be enabled in Firebase Console to support one-tap
+         // sign-up.
+         // Required to enable this provider in one-tap sign-up.
+          authMethod: 'https://accounts.google.com',
+         // Required to enable ID token credentials for this provider.
+         // This can be obtained from the Credentials page of the Google APIs
+         // console.
+          clientId: '816721714419-k26nskknfiqssb8meb7jqo4cjlp4q9qe.apps.googleusercontent.com'
+        },
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID
+      ]
+    }
+    var ui = new firebaseui.auth.AuthUI(firebase.auth())
+    ui.start('#firebaseui-auth-container', uiConfig)
+  },
   data () {
     return {
       email: '',
@@ -101,31 +112,6 @@ export default {
     googleOauthSignUp () {
       this.$store.dispatch('googleOauthSignUp', {})
     }
-    /*
-    var ui = new firebaseui.auth.AuthUI(firebase.auth());
-    commit('setLoading', true)
-    var uiConfig = {
-      callbacks: {
-        signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-          router.push('/signin')
-          // User successfully signed in.
-          // Return type determines whether we continue the redirect automatically
-          // or whether we leave that to developer to handle.
-          return true;
-        },
-        uiShown: function() {
-          // The widget is rendered.
-          // Hide the loader.
-          document.getElementById('loader').style.display = 'none';
-          }
-        },
-      signInFlow: 'popup',
-      signInOptions: [
-        // Leave the lines as is for the providers you want to offer your users.
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        firebase.auth.EmailAuthProvider.PROVIDER_ID
-      ]
-    } */
   },
   watch: {
     error (value) {

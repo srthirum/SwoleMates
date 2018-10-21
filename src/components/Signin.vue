@@ -32,66 +32,46 @@
             </v-flex>
             <v-flex class="text-xs-center" mt-5>
               <v-btn color="primary" type="submit">Sign In</v-btn>
-              <span>
-                Or
-              </span>
-            </v-flex>
-            <v-flex>
-              <button id="login" @click="showModal = true">Penis</button>
-              <!-- use the modal component, pass in the prop -->
-              <modal v-if="showModal" @close="showModal = false">
-                <!--
-                  you can use custom content here to overwrite
-                  default content
-                -->
-                <h3 slot="header">Google Signin
-                </h3>
-              </modal>
             </v-flex>
           </v-layout>
         </form>
       </v-flex>
     </v-layout>
+    <v-flex xs12 class="text-xs-center" mt-3>
+     <p style="color:#808080">Or</p>
+     <div id="firebaseui-auth-container"></div>
+    </v-flex>
   </v-container>
 </template>
-
-<!-------- template for the modal component -------->
-<script type="text/x-template" id="modal-template">
-  <transition name="modal">
-    <div class="modal-mask">
-      <div class="modal-wrapper">
-        <div class="modal-container">
-
-          <div class="modal-header">
-            <slot name="header">
-              default header
-            </slot>
-          </div>
-
-          <div class="modal-body">
-            <slot name="body">
-              default body
-            </slot>
-          </div>
-
-          <div class="modal-footer">
-            <slot name="footer">
-              default footer
-              <button class="modal-default-button" @click="$emit('close')">
-                OK
-              </button>
-            </slot>
-          </div>
-        </div>
-      </div>
-    </div>
-  </transition>
-</script>
 
 
 
 <script>
+import firebase from 'firebase'
+import firebaseui from 'firebaseui'
 export default {
+  mounted () {
+    // create google signin widget
+    var uiConfig = {
+      signInSuccessUrl: '/home',
+      signInFlow: 'popup',
+      signInOptions: [
+        {
+          // Google provider must be enabled in Firebase Console to support one-tap
+         // sign-up.
+         // Required to enable this provider in one-tap sign-up.
+          authMethod: 'https://accounts.google.com',
+         // Required to enable ID token credentials for this provider.
+         // This can be obtained from the Credentials page of the Google APIs
+         // console.
+          clientId: '816721714419-k26nskknfiqssb8meb7jqo4cjlp4q9qe.apps.googleusercontent.com'
+        },
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID
+      ]
+    }
+    var ui = new firebaseui.auth.AuthUI(firebase.auth())
+    ui.start('#firebaseui-auth-container', uiConfig)
+  },
   data () {
     return {
       email: '',
