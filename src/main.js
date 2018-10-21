@@ -6,9 +6,12 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import { store } from './store'
 import firebase from 'firebase'
+import VueFire from 'vuefire'
 
 Vue.use(Vuetify)
-firebase.initializeApp({
+Vue.use(VueFire)
+
+let app = firebase.initializeApp({
   apiKey: 'AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE',
   authDomain: 'swolemates-276ca.firebaseapp.com',
   databaseURL: 'https://swolemates-276ca.firebaseio.com',
@@ -35,3 +38,13 @@ const unsubscribe = firebase.auth()
   })
   unsubscribe()
 })
+
+// silence the console warnings
+const firestoreSettings = {
+  timestampsInSnapshots: true
+}
+let firestore = app.firestore()
+firestore.settings(firestoreSettings)
+
+export const fsdb = firestore
+export const storage = app.storage()
