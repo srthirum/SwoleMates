@@ -44,27 +44,6 @@ export const store = new Vuex.Store({
         commit('setLoading', false)
       })
     },
-    // google Oauth signup
-    googleOauthSignUp ({commit}, payload) {
-      commit('setLoading', true)
-      var uiConfig = {
-        signInFlow: 'popup',
-        signInOptions: [
-          {
-            provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-            authMethod: 'https://accounts.google.com',
-            clientId: 816721714419-q2kqeame7c1h5sbfjimheo7c0oddsdld.apps.googleusercontent.com
-          },
-          // Leave the lines as is for the providers you want to offer your users.
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID
-        ],
-        credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
-        }
-      // Initialize the FirebaseUI Widget using Firebase.
-      var ui = new firebaseui.auth.AuthUI(firebase.auth())
-      // The start method will wait until the DOM is loaded.
-      ui.start('#firebaseui-auth-container', uiConfig)
-    },
     
     userSignIn ({commit}, payload) {
       commit('setLoading', true)
@@ -81,19 +60,6 @@ export const store = new Vuex.Store({
         commit('setError', error.message)
         commit('setLoading', false)
       })
-
-      /*/ firebase google Oauth login
-      firebase.auth().signInWithPopup(firebase.auth.GoogleAuthProvider)
-      .then(function(result) {
-        commit('setGoogleLoginToken', result.credential.accessToken)
-        commit('setUser', result.user)
-      }
-      .catch(function(error) {
-        commit('setError', error.code + error.message)
-        commit('setLoading', false)
-      })
-
-    )*/
     },
 
     autoSignIn ({commit}, payload) {

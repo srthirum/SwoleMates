@@ -47,28 +47,27 @@
 
 
 <script>
-import firebase from 'firebase'
-import firebaseui from 'firebaseui'
+ import firebase from 'firebase'
+ import firebaseui from 'firebaseui'
 export default {
   mounted () {
     // create google signin widget
     var uiConfig = {
       signInSuccessUrl: '/home',
       signInFlow: 'popup',
+      // config signin options
       signInOptions: [
         {
-          // Google provider must be enabled in Firebase Console to support one-tap
-         // sign-up.
-         // Required to enable this provider in one-tap sign-up.
+          // use google accounts for authentication
           authMethod: 'https://accounts.google.com',
-         // Required to enable ID token credentials for this provider.
-         // This can be obtained from the Credentials page of the Google APIs
-         // console.
+          // project ID for google API console
           clientId: '816721714419-k26nskknfiqssb8meb7jqo4cjlp4q9qe.apps.googleusercontent.com'
         },
+        // enable google auth as one of the providers
         firebase.auth.GoogleAuthProvider.PROVIDER_ID
       ]
     }
+    // set up and render widget instance
     var ui = new firebaseui.auth.AuthUI(firebase.auth())
     ui.start('#firebaseui-auth-container', uiConfig)
   },
