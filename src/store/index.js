@@ -8,13 +8,17 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     appTitle: 'My Awesome App',
-    user: null,
+    email: null,
+    name: null,
+    accessToken: null,  // oauth signin token
     error: null,
+
     loading: false
   },
   mutations: {
-    setUser (state, payload) {
-      state.user = payload
+    setUser (state, email, name = null, accessToken = null) {
+      state.email = email
+      state.name = name
     },
     setError (state, payload) {
       state.error = payload
@@ -51,8 +55,20 @@ export const store = new Vuex.Store({
         commit('setLoading', false)
       })
     },
+    // handles google oauth widget signin
+    // hears auth state change and logs user info
+    // then redirects to home
     autoSignIn ({commit}, payload) {
-      commit('setUser', {email: payload.email})
+      payload.getIdToken().then(function (Token){
+        commit('setUser', {email: payload.email, name: payload.displayName, accessToken: Token})
+        commit('setLoading', false)
+        commit('setError', null)
+        router.push('/home')
+      })
+      .catch(error => {
+        commit('setError', error.message)
+        commit('setLoading', false)
+      })
     },
     userSignOut ({commit}) {
       firebase.auth().signOut()
