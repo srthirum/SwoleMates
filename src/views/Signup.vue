@@ -74,7 +74,7 @@ export default {
           clientId: '816721714419-k26nskknfiqssb8meb7jqo4cjlp4q9qe.apps.googleusercontent.com'
         },
         // enable google auth as one of the providers
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID
+        firebase.auth.FacebookAuthProvider.PROVIDER_ID
       ]
     }
     // set up and render widget instance
@@ -107,10 +107,6 @@ export default {
       }
       this.$store.dispatch('userSignUp', { email: this.email, password: this.password })
     },
-
-    googleOauthSignUp () {
-      this.$store.dispatch('googleOauthSignUp', {})
-    }
   },
   watch: {
     error (value) {

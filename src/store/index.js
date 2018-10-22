@@ -15,13 +15,13 @@ export const store = new Vuex.Store({
     name: null,
     accessToken: null,  // oauth signin token
     error: null,
-
     loading: false
   },
   mutations: {
     setUser (state, email, name = null, accessToken = null) {
       state.email = email
       state.name = name
+      state.accessToken = accessToken
     },
     setError (state, payload) {
       state.error = payload
@@ -85,7 +85,7 @@ export const store = new Vuex.Store({
   },
   getters: {
     isAuthenticated (state) {
-      return state.user !== null && state.user !== undefined
+      return state.email !== null && state.email !== undefined
     }
   }
 })
