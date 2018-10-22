@@ -57,7 +57,8 @@
 </template>
 
 <script>
-import GoogleSigninBtn from'./GoogleSigninBtn'
+import firebaseui from 'firebaseui'
+import firebase from 'firebase'
 export default {
   mounted () {
     // create google signin widget
