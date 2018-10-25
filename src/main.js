@@ -37,4 +37,12 @@ const unsubscribe = firebase.auth()
   })
   unsubscribe()
 })
+
+// silence the console warnings
+const firestoreSettings = {
+  timestampsInSnapshots: true
+}
+let firestore = app.firestore()
+firestore.settings(firestoreSettings)
 export const fsdb = app.firestore()
+export const storage = app.storage()
