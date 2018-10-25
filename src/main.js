@@ -23,6 +23,7 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 const unsubscribe = firebase.auth()
 .onAuthStateChanged((firebaseUser) => {
+
   new Vue({
     el: '#app',
     router,
@@ -36,4 +37,4 @@ const unsubscribe = firebase.auth()
   })
   unsubscribe()
 })
-export const db = app.firestore()
+export const fsdb = app.firestore()
