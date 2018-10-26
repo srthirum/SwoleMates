@@ -105,3 +105,7 @@ export default {
   }
 }
 </script>
+
+<style>
+@import "../../node_modules/firebaseui/dist/firebaseui.css"
+</style>
