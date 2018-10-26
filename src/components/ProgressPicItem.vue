@@ -1,25 +1,45 @@
 <template>
   <v-layout>
     <v-flex xs12 sm6 offset-sm3>
-      <v-card>
-        <v-img
-          :src="imageUrl"
-        ></v-img>
-        <v-card-title primary-title>
-          <div>
-            <h3 class="headline mb-0">
-              {{ item.description }}
-              <br> posted by {{ item.user }}
-              <br> at {{ photoDate }}
-            </h3>
-            <div>{{ item }}</div>
-          </div>
-        </v-card-title>
 
-        <v-card-actions>
-          <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
-        </v-card-actions>
-      </v-card>
+      <div id="progress-pic">
+        <v-app id="v-progress-pic">
+          <v-flex> 
+            <v-card>
+              <v-container fluid grid-list-md>
+                <v-layout row wrap>
+                    <v-flex>
+                      {{photoDate}}
+                      <v-img
+                        :src="imageUrl"
+                        height="400px">
+                      </v-img>
+
+                      <v-card-actions>
+                        <v-spacer> posted by: {{item.user}}</v-spacer>
+                        <v-spacer>
+                          {{item.description}} 
+                        </v-spacer>
+                          <v-btn icon>
+                            <v-icon>favorite</v-icon>
+                          </v-btn>
+                          <v-btn icon>
+                            <v-icon>bookmark</v-icon>
+                          </v-btn>
+                          <v-btn icon>
+                            <v-icon>share</v-icon>
+                          </v-btn>
+                          <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
+                      </v-card-actions>
+                      <v-flex> comments go here </v-flex>
+                    </v-flex>
+                </v-layout>
+
+              </v-container>
+            </v-card>
+          </v-flex>
+        </v-app>
+      </div>
     </v-flex>
   </v-layout>
 </template>
