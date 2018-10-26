@@ -44,7 +44,36 @@ export default {
   computed: {
     photoDate: function () {
       if (this.item.created) {
-        return new Date(this.item.created.seconds * 1000).toString()
+        const today = new Date()
+        const d = new Date(this.item.created.seconds * 1000)
+        const diff = today - d
+        const photoMonth = d.getMonth()
+        const photoDate = d.getDate()
+        const photoYear = d.getFullYear()
+        const oneDay = 1000 * 60 * 60 * 24 // a single day in milliseconds
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+
+        // photo date is over a year ago
+        if ((today.getFullYear() - photoYear) > 0) {
+          return monthNames[photoMonth] + ' ' + photoDate + ', ' + photoYear
+        }
+
+        // photo is less than a week old
+        if (diff < (oneDay * 7)) {
+          if (today.getDate() === photoDate) {
+            return 'Today'
+          }
+          let daysAgo = today.getDate() - photoDate
+          if (daysAgo === 1) {
+            return 'Yesterday'
+          }
+          return daysAgo + ' days ago'
+        }
+
+        // default photo posted over a week ago
+        return monthNames[photoMonth] + ' ' + photoDate
       }
     }
   },
