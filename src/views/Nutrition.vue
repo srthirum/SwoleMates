@@ -56,7 +56,7 @@ export default {
   },
 	methods: {
 		uploadNutrition () {
-			this.$firestoreRefs.meals.add({
+			this.$firestoreRefs.mealEntries.add({
         food: this.food,
         calories: this.calories,
         user: this.$store.state.user
