@@ -44,5 +44,5 @@ const firestoreSettings = {
 }
 let firestore = app.firestore()
 firestore.settings(firestoreSettings)
-export const fsdb = app.firestore()
+export const fsdb = firestore
 export const storage = app.storage()
