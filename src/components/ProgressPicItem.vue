@@ -75,27 +75,29 @@ export default {
   },
   methods: {
     deleteItem: function () {
-      storage.ref().child(this.item.fileLocation).delete()
-      .catch(error => {
-        var errorMsg = 'Error deleting image file from storage'
-        console.log(errorMsg, error)
-      })
       this.$firestoreRefs.progressPicItems.doc(this.item.id).delete()
       .catch(error => {
         var errorMsg = 'Error deleting item from database'
         console.log(errorMsg, error)
       })
+      storage.ref().child(this.item.fileLocation).delete()
+      .catch(error => {
+        var errorMsg = 'Error deleting image file from storage'
+        console.log(errorMsg, error)
+      })
     },
     getImageUrl: function () {
-      if (this.item.fileLocation) {
-        storage.ref().child(this.item.fileLocation).getDownloadURL()
-        .then(url => {
-          this.imageUrl = url
-        })
-        .catch(error => {
-          var errorMsg = 'Error downloading image'
-          console.log(errorMsg, error)
-        })
+      if ('fileLocation' in this.item) {
+        if (this.item.fileLocation !== '') {
+          storage.ref().child(this.item.fileLocation).getDownloadURL()
+          .then(url => {
+            this.imageUrl = url
+          })
+          .catch(error => {
+            var errorMsg = 'Error downloading image'
+            console.log(errorMsg, error)
+          })
+        }
       }
     }
   }
