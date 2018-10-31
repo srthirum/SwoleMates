@@ -5,31 +5,7 @@
         <h1>Meal Upload</h1>
       </v-flex>
       <v-flex xs12 sm6 offset-sm3 mt-3>
-      	<form v-on:submit.prevent="uploadNutrition">
-          <v-layout column>
-            <v-flex>
-              <v-text-field
-                name="food"
-                label="Food"
-                id="food"
-                type="text"
-                v-model="food"
-                required></v-text-field>
-            </v-flex>
-            <v-flex>
-              <v-text-field
-                name="calories"
-                label="Calories"
-                id="calories"
-                type="number"
-                v-model="calories"
-                required></v-text-field>
-            </v-flex>
-            <v-flex class="text-xs-center" mt-5>
-              <v-btn color="primary" type="submit">Submit</v-btn>
-            </v-flex>
-          </v-layout>
-        </form>
+        <mealPost></mealPost>
           <mealTemplate v-for="meal in mealEntries" :key='meal.id' :item='meal'></mealTemplate>
       </v-flex>
     </v-layout>
@@ -39,9 +15,11 @@
 <script>
   import { fsdb } from '../main.js';
   import mealTemplate from '../components/MealTemplate.vue'
+  import mealPost from '../components/MealPost.vue'
 export default {
 	components: {
-    mealTemplate
+    mealTemplate,
+    mealPost
   },
   data () {
 		return {
