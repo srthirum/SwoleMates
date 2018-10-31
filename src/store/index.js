@@ -58,6 +58,31 @@ export const store = new Vuex.Store({
       firebase.auth().signOut()
       commit('setUser', null)
       router.push('/')
+    },
+    googleAuth ({commit}) {
+      commit('setLoading', true)
+      var provider = new firebase.auth.GoogleAuthProvider()
+      firebase.auth().signInWithPopup(provider)
+      .then(firebaseUser => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = firebaseUser.credential.accessToken;
+        // The signed-in user info.
+        var user = firebaseUser.user;
+
+        commit('setUser', {user: firebaseUser.user.email})
+        commit('setLoading', false)
+        commit('setError', null)
+        router.push('/home')
+      }).catch(error => {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+      })
     }
   },
   getters: {
