@@ -7,7 +7,6 @@
       <v-flex xs12 class="text-xs-center" mt-3>
         <p>This is a user's home page</p>
       </v-flex>
-
       <v-flex xs12 class="text-xs-center" mt-3>
         <post-progress-pic-item>
         </post-progress-pic-item>
@@ -24,7 +23,6 @@
 </template>
 
 <script>
-
 import { fsdb } from '../main.js'
 import ProgressPicItem from '../components/ProgressPicItem.vue'
 import PostProgressPicItem from '../components/PostProgressPicItem.vue'

@@ -56,15 +56,10 @@
 
 <script>
   export default {
+    name: 'app',
     data () {
       return {
-        // appTitle: 'Awesome App',
         sidebar: false
-        // menuItems: [
-        //   { title: 'Home', path: '/home', icon: 'home' },
-        //   { title: 'Sign Up', path: '/signup', icon: 'face' },
-        //   { title: 'Sign In', path: '/signin', icon: 'lock_open' }
-        // ]
       }
     },
     computed: {
@@ -77,7 +72,8 @@
       menuItems () {
         if (this.isAuthenticated) {
           return [
-            { title: 'Home', path: '/home', icon: 'home' }
+            { title: 'Home', path: '/home', icon: 'home' },
+            { title: 'Nutrition Info', path: '/nutritionUpload', icon: 'kitchen' }
           ]
         } else {
           return [
