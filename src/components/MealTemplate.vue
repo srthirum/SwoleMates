@@ -8,9 +8,9 @@
         <v-card-title primary-title>
           <div>
             <h3 class="headline mb-0">
-              {{ name }}
-              <br> Calories: {{ calories }}
-              <br> posted by {{ user }}
+              {{ item.food }}
+              <br> Calories: {{ item.calories }}
+              <br> posted by {{ item.user.email }}
             </h3>
           </div>
         </v-card-title>
@@ -27,7 +27,7 @@
 import { fsdb, storage } from '../main.js'
 export default {
   name: 'mealTemplate',
-  props: ['calories', 'name', 'imgURL', 'user'],
+  props: ['item'],
   data () {
     return {
       imageUrl: 'https://bluewater.co.uk/sites/bluewater/files/styles/image_spotlight_large/public/images/spotlights/burger-cropped.jpg?itok=SeFYMFP6'
@@ -37,7 +37,7 @@ export default {
     this.getImageUrl()
   },
   firestore: {
-    mealItems: fsdb.collection('meal-post')
+    mealItems: fsdb.collection('meals')
   },
   computed: {
     photoDate: function () {
@@ -53,14 +53,16 @@ export default {
   },
   methods: {
     deleteItem: function () {
-      storage.ref().child(this.item.fileLocation).delete()
-      .catch(error => {
-        var errorMsg = 'Error deleting image file from storage'
-        console.log(errorMsg, error)
-      })
+      console.log("Trying to delete item with id: " + this.item.id)
+      console.log("Firestore Ref: " + this.$firestoreRefs.mealItems)
       this.$firestoreRefs.mealItems.doc(this.item.id).delete()
       .catch(error => {
         var errorMsg = 'Error deleting item from database'
+        console.log(errorMsg, error)
+      })
+      storage.ref().child(this.item.fileLocation).delete()
+      .catch(error => {
+        var errorMsg = 'Error deleting image file from storage'
         console.log(errorMsg, error)
       })
     },

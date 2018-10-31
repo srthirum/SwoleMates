@@ -30,7 +30,7 @@
             </v-flex>
           </v-layout>
         </form>
-          <mealTemplate v-for="meal in mealEntries" :name='meal.food' :calories='meal.calories'></mealTemplate>
+          <mealTemplate v-for="meal in mealEntries" :key='meal.id' :item='meal'></mealTemplate>
       </v-flex>
     </v-layout>
   </v-container>
