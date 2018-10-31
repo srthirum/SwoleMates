@@ -16,15 +16,15 @@ export function timeAgoDate (time) {
 
   // photo less than an hour old
   if (diffBetween < oneMinute) {
-    return pluralize(Math.floor(diffBetween / oneMinute), ' minute')
+    return pluralize(Math.floor(diffBetween / oneMinute), ' minute') + ' ago'
   }
   // less than a day old
   if (diffBetween < oneDay) {
-    return pluralize(Math.floor(diffBetween / oneHour), ' hour')
+    return pluralize(Math.floor(diffBetween / oneHour), ' hour') + ' ago'
   }
   // less than a week old
   if (diffBetween < (oneDay * 7)) {
-    return pluralize(Math.floor(diffBetween / oneDay), ' day')
+    return pluralize(Math.floor(diffBetween / oneDay), ' day') + ' ago'
   }
   // last year
   if ((now.getFullYear() - photoYear) > 0) {

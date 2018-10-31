@@ -65,7 +65,9 @@ export default {
   },
   computed: {
     photoDate: function () {
-      return timeAgoDate(this.item.created.seconds * 1000)
+      if (this.item.created) {
+        return timeAgoDate(this.item.created.seconds * 1000)
+      }
     }
   },
   watch: {
