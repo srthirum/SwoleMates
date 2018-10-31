@@ -18,12 +18,12 @@ let app = firebase.initializeApp({
   storageBucket: 'swolemates-276ca.appspot.com',
   messagingSenderId: '816721714419'
 })
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 const unsubscribe = firebase.auth()
 .onAuthStateChanged((firebaseUser) => {
+
   new Vue({
     el: '#app',
     router,
@@ -44,6 +44,5 @@ const firestoreSettings = {
 }
 let firestore = app.firestore()
 firestore.settings(firestoreSettings)
-
 export const fsdb = firestore
 export const storage = app.storage()

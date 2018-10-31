@@ -7,7 +7,7 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
   state: {
-    appTitle: 'My Awesome App',
+    appTitle: 'SwoleMates',
     user: null,
     error: null,
     loading: false
