@@ -25,7 +25,9 @@
 </template>
 
 <script>
+
 import { fsdb, storage } from '../main.js'
+import { timeAgoDate } from '../util/time.js'
 
 export default {
   name: 'progress-pic-item',
@@ -36,45 +38,13 @@ export default {
     }
   },
   mounted: function () {
-    this.getImageUrl()
   },
   firestore: {
     progressPicItems: fsdb.collection('progress-post')
   },
   computed: {
     photoDate: function () {
-      if (this.item.created) {
-        const today = new Date()
-        const d = new Date(this.item.created.seconds * 1000)
-        const diff = today - d
-        const photoMonth = d.getMonth()
-        const photoDate = d.getDate()
-        const photoYear = d.getFullYear()
-        const oneDay = 1000 * 60 * 60 * 24 // a single day in milliseconds
-        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December'
-        ]
-
-        // photo date is over a year ago
-        if ((today.getFullYear() - photoYear) > 0) {
-          return monthNames[photoMonth] + ' ' + photoDate + ', ' + photoYear
-        }
-
-        // photo is less than a week old
-        if (diff < (oneDay * 7)) {
-          if (today.getDate() === photoDate) {
-            return 'Today'
-          }
-          let daysAgo = today.getDate() - photoDate
-          if (daysAgo === 1) {
-            return 'Yesterday'
-          }
-          return daysAgo + ' days ago'
-        }
-
-        // default photo posted over a week ago
-        return monthNames[photoMonth] + ' ' + photoDate
-      }
+      return timeAgoDate(this.item.created.seconds * 1000)
     }
   },
   watch: {
@@ -105,6 +75,8 @@ export default {
           var errorMsg = 'Error downloading image'
           console.log(errorMsg, error)
         })
+      } else {
+        console.log('No photo file for this post')
       }
     }
   }
