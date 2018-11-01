@@ -28,7 +28,12 @@ export const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
-        commit('setUser', {email: firebaseUser.user.email})
+        commit('setUser', {
+          username: firebaseUser.user.displayName,
+          email: firebaseUser.user.email,
+          emailVerified: firebaseUser.user.emailVerified,
+          uid: firebaseUser.user.uid
+        })
         commit('setLoading', false)
         router.push('/home')
       })
@@ -41,7 +46,12 @@ export const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
-        commit('setUser', {email: firebaseUser.user.email})
+        commit('setUser', {
+          username: firebaseUser.user.displayName,
+          email: firebaseUser.user.email,
+          emailVerified: firebaseUser.user.emailVerified,
+          uid: firebaseUser.user.uid
+        })
         commit('setLoading', false)
         commit('setError', null)
         router.push('/home')
@@ -52,7 +62,12 @@ export const store = new Vuex.Store({
       })
     },
     autoSignIn ({commit}, payload) {
-      commit('setUser', {email: payload.email})
+      commit('setUser', {
+        username: payload.displayName,
+        email: payload.email,
+        emailVerified: payload.emailVerified,
+        uid: payload.uid
+      })
     },
     userSignOut ({commit}) {
       firebase.auth().signOut()
@@ -65,11 +80,13 @@ export const store = new Vuex.Store({
       firebase.auth().signInWithPopup(provider)
       .then(firebaseUser => {
         // This gives you a Google Access Token. You can use it to access the Google API.
-        var token = firebaseUser.credential.accessToken;
-        // The signed-in user info.
-        var user = firebaseUser.user;
-
-        commit('setUser', {user: firebaseUser.user.email})
+        // var token = firebaseUser.credential.accessToken
+        commit('setUser', {
+          username: firebaseUser.user.displayName,
+          email: firebaseUser.user.email,
+          emailVerified: firebaseUser.user.emailVerified,
+          uid: firebaseUser.user.uid
+        })
         commit('setLoading', false)
         commit('setError', null)
         router.push('/home')

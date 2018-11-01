@@ -16,7 +16,7 @@
                       </v-img>
 
                       <v-card-actions>
-                        <v-spacer> posted by: {{item.user}}</v-spacer>
+                        <v-spacer> posted by: {{item.user.username}}</v-spacer>
                         <v-spacer>
                           {{item.description}} 
                         </v-spacer>
