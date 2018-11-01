@@ -9,7 +9,9 @@
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
                     <v-flex>
-                      {{photoDate}}
+                      <div :title="dateString">
+                        {{photoDate}}
+                      </div>
                       <v-img
                         :src="imageUrl"
                         height="400px">
@@ -67,6 +69,11 @@ export default {
     photoDate: function () {
       if (this.item.created) {
         return timeAgoDate(this.item.created.seconds * 1000)
+      }
+    },
+    dateString: function () {
+      if (this.item.created) {
+        return new Date(this.item.created.seconds * 1000).toString()
       }
     }
   },
