@@ -15,7 +15,7 @@
 <script>
 
 import { fsdb, storage } from '../main.js'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
 
 export default {
   name: 'post-progress-pic-item',

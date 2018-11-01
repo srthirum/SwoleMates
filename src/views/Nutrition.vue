@@ -37,8 +37,9 @@
 </template>
 
 <script>
-  import { fsdb } from '../main.js';
-  import mealTemplate from '../components/MealTemplate.vue'
+import { fsdb } from '../main.js'
+import mealTemplate from '../components/MealTemplate.vue'
+
 export default {
 	components: {
     mealTemplate

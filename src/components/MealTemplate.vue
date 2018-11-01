@@ -25,6 +25,7 @@
 
 <script>
 import { fsdb, storage } from '../main.js'
+
 export default {
   name: 'mealTemplate',
   props: ['item'],
