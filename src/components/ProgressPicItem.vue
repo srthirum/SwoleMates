@@ -4,7 +4,7 @@
 
       <div id="progress-pic">
         <v-app id="v-progress-pic">
-          <v-flex> 
+          <v-flex>
             <v-card>
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
@@ -23,7 +23,7 @@
                       </v-img>
 
                       <v-card-actions>
-                        <v-spacer> 
+                        <v-spacer>
                           posted by: {{item.user.email}}
                         </v-spacer>
                         <v-spacer>
@@ -41,9 +41,17 @@
                           <v-btn icon>
                             <v-icon>share</v-icon>
                           </v-btn>
+<<<<<<< HEAD
                           <v-btn v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
+=======
+                          <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
+
+>>>>>>> added modal component
                       </v-card-actions>
                       <v-flex> comments go here </v-flex>
+                      <v-flex>
+                        <google-vision-modal :pictureUrl="imageUrl"></google-vision-modal>
+                      </v-flex>
                     </v-flex>
                 </v-layout>
 
@@ -60,8 +68,11 @@
 
 import { fsdb, storage } from '../main.js'
 import { timeAgoDate } from '../util/time.js'
-
+import GoogleVisionModal from './GoogleVisionModal.vue'
 export default {
+  components: {
+    GoogleVisionModal
+  },
   name: 'progress-pic-item',
   props: ['item'],
   data () {
@@ -89,8 +100,8 @@ export default {
 
     isOwner: function() {
       if(this.item.user.uid === this.$store.state.user.uid)
-        return true 
-      else 
+        return true
+      else
         return false
     },
   },

@@ -24,7 +24,6 @@
 <script>
 
 import GoogleAuthButton from '../components/GoogleAuthButton.vue'
-
 export default {
   components: {
     GoogleAuthButton
