@@ -4,7 +4,7 @@
 
       <div id="progress-pic">
         <v-app id="v-progress-pic">
-          <v-flex> 
+          <v-flex>
             <v-card>
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
@@ -18,7 +18,7 @@
                       <v-card-actions>
                         <v-spacer> posted by: {{item.user}}</v-spacer>
                         <v-spacer>
-                          {{item.description}} 
+                          {{item.description}}
                         </v-spacer>
                           <v-btn icon>
                             <v-icon>favorite</v-icon>
@@ -30,10 +30,18 @@
                             <v-icon>share</v-icon>
                           </v-btn>
                           <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
+                          <v-btn @click="showGoogleModal = true">Get Info Mofo</v-btn>
+                          <google-vision-modal
+                          :show="showGoogleModal"
+                          :pictureUrl="imageUrl"
+                          @close="showGoogleModal = false">
+                        </google-vision-modal>
+                        </new-post-modal>
                       </v-card-actions>
                       <v-flex> comments go here </v-flex>
                     </v-flex>
                 </v-layout>
+                <v-btn
 
               </v-container>
             </v-card>
@@ -46,10 +54,11 @@
 
 <script>
 import { fsdb, storage } from '../main.js'
+import GoogleVisionModal from './GoogleVisionModal.vue'
 
 export default {
   name: 'progress-pic-item',
-  props: ['item'],
+  props: ['item', 'show'],
   data () {
     return {
       imageUrl: ''

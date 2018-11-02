@@ -13,11 +13,19 @@
       <v-flex xs12 sm6 offset-sm3 mt-3 class="text-xs-center" mt-5>
         <v-btn color="primary" to="/signup">Sign Up</v-btn>
         <v-btn to="/signin">Sign In</v-btn>
+        <v-btn @click="showGoogleModal = true">Get Info Mofo</v-btn>
+        <google-vision-modal
+        :show="showGoogleModal"
+        :pictureUrl="imageUrl"
+        @close="showGoogleModal = false">
+      </google-vision-modal>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-export default {}
+export default {
+
+}
 </script>
