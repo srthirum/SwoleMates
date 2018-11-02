@@ -35,7 +35,11 @@ export default {
       this.$firestoreRefs.progressPicItems.add({
         description: this.photoDescription,
         created: firebase.firestore.FieldValue.serverTimestamp(),
-        user: this.$store.state.user.email,
+        user: {
+          username: this.$store.state.user.username,
+          email: this.$store.state.user.email,
+          uid: this.$store.state.user.uid
+        },
         fileLocation: ''
       })
       .then(docRef => {

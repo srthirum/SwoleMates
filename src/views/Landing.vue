@@ -14,10 +14,20 @@
         <v-btn color="primary" to="/signup">Sign Up</v-btn>
         <v-btn to="/signin">Sign In</v-btn>
       </v-flex>
+      <v-flex xs12 class="text-xs-center" mt-3>
+        <google-auth-button></google-auth-button>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-export default {}
+
+import GoogleAuthButton from '../components/GoogleAuthButton.vue'
+
+export default {
+  components: {
+    GoogleAuthButton
+  }
+}
 </script>

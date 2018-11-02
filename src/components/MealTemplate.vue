@@ -10,7 +10,7 @@
             <h3 class="headline mb-0">
               {{ item.food }}
               <br> Calories: {{ item.calories }}
-              <br> posted by {{ item.user.email }}
+              <br> posted by {{ item.user.username }}
             </h3>
           </div>
         </v-card-title>

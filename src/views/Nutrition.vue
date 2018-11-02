@@ -60,7 +60,11 @@ export default {
 			this.$firestoreRefs.mealEntries.add({
         food: this.food,
         calories: this.calories,
-        user: this.$store.state.user
+        user: {
+          username: this.$store.state.user.username,
+          email: this.$store.state.user.email,
+          uid: this.$store.state.user.uid
+        }
       })
       .catch(error => {
         var errorMsg = 'Error uploading information'
