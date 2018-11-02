@@ -53,7 +53,7 @@ export default {
       })
 
       var uploadFile = (docId) => {
-        var fileLocationName = docId + '/' + this.file.name
+        var fileLocationName = 'progress-pics/' + this.$store.state.user.uid + '/' + docId + '/' + this.file.name
         storage.ref().child(fileLocationName).put(this.file)
         .then(snapshot => {
           // then edit the database item with the file location

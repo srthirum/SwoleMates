@@ -1,0 +1,28 @@
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Progress pics image files 
+    //   - Authenticated users can read and create
+    //   - Only the owner of an item can delete and update 
+    //   - File is less than 10MB
+    //   - Content type is an image
+    match /progress-pics/{userId}/{allPaths=**} {
+      allow delete: if request.auth.uid == userId;
+      allow update: if request.auth.uid == userId
+                    && request.resource.size < 10 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*')
+      allow create: if request.auth.uid != null
+                    && request.resource.size < 10 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*')
+      allow read: if request.auth.uid != null
+    }
+
+    // Wildcard match all for development
+    //   - Must be authenticated
+    //   - File is less than 10MB
+    match /{document=**} {
+      allow read, write: if request.auth.uid != null
+                          && request.resource.size < 10 * 1024 * 1024
+    }
+  }
+}
