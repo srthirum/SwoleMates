@@ -15,7 +15,7 @@ export function timeAgoDate (time) {
   ]
 
   // photo less than an hour old
-  if (diffBetween < oneMinute) {
+  if (diffBetween < oneHour) {
     return pluralize(Math.floor(diffBetween / oneMinute), ' minute') + ' ago'
   }
   // less than a day old
