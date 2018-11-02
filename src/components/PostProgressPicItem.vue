@@ -1,15 +1,60 @@
 <template>
-  <v-form>
-    <v-text-field
-      v-model.trim="photoDescription"
-      label="Description"
-      required
-    ></v-text-field>
-    <input type="file" @change="onFileChange">
-    <v-btn @click="postProgressItem">
-      Post
-    </v-btn>
-  </v-form>
+  <v-container grid-list-xl>
+     <v-layout row wrap>
+
+       <v-flex d-flex xs12 sm10 md4>
+         <v-card dark color="orange">
+           <v-card-title primary class="title"></v-card-title>
+           <v-card-text>
+             <div class="text-xs-center">
+            <v-avatar size="125px">
+              <img
+                class="img-circle elevation-7 mb-1"
+                src="https://media.mnn.com/assets/images/2018/06/woman_working_out_sweaty.jpg.653x0_q80_crop-smart.jpg"
+              >
+            </v-avatar>
+            <h4>Jane <span style="font-weight:bold">Doe</span></h4>
+            <h5 class="text-xs-center">Workout Enthusiast</h5>
+            <v-layout justify-space-between>
+              <v-btn flat color="white darken-4">Home</v-btn>
+              <v-btn flat color="white darken-4">Profile</v-btn>
+              <v-btn flat color="white darken-4">Meal Plan</v-btn>
+            </v-layout>
+          </div>
+
+
+
+
+           </v-card-text>
+         </v-card>
+       </v-flex>
+
+
+      <v-flex>
+        <v-card dark color="orange">
+          <v-card-text>
+            <v-form>
+              <v-text-field
+                v-model.trim="photoDescription"
+                label="Description"
+                required
+              ></v-text-field>
+              <input type="file" @change="onFileChange">
+              <v-btn @click="postProgressItem">
+                Post
+              </v-btn>
+            </v-form>
+          </v-card-text>
+
+
+        </v-card>
+
+  
+  </v-flex>
+
+
+      </v-layout>
+  </v-container>
 </template>
 
 <script>
