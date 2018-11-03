@@ -15,7 +15,7 @@
 <script>
 
 import { fsdb, storage } from '../main.js'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
 
 export default {
   name: 'post-progress-pic-item',
@@ -35,7 +35,11 @@ export default {
       this.$firestoreRefs.progressPicItems.add({
         description: this.photoDescription,
         created: firebase.firestore.FieldValue.serverTimestamp(),
-        user: this.$store.state.user.email,
+        user: {
+          username: this.$store.state.user.username,
+          email: this.$store.state.user.email,
+          uid: this.$store.state.user.uid
+        },
         fileLocation: ''
       })
       .then(docRef => {
@@ -49,7 +53,7 @@ export default {
       })
 
       var uploadFile = (docId) => {
-        var fileLocationName = docId + '/' + this.file.name
+        var fileLocationName = 'progress-pics/' + this.$store.state.user.uid + '/' + docId + '/' + this.file.name
         storage.ref().child(fileLocationName).put(this.file)
         .then(snapshot => {
           // then edit the database item with the file location

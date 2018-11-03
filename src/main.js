@@ -4,7 +4,10 @@ import router from './router'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import { store } from './store'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
+import 'firebase/storage'
 import VueFire from 'vuefire'
 
 Vue.use(Vuetify)
@@ -44,5 +47,6 @@ const firestoreSettings = {
 }
 let firestore = app.firestore()
 firestore.settings(firestoreSettings)
+
 export const fsdb = firestore
 export const storage = app.storage()

@@ -47,12 +47,21 @@
           </v-layout>
         </form>
       </v-flex>
+      <v-flex xs12 class="text-xs-center" mt-3>
+        <google-auth-button></google-auth-button>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+
+import GoogleAuthButton from '../components/GoogleAuthButton.vue'
+
 export default {
+  components: {
+    GoogleAuthButton
+  },
   data () {
     return {
       email: '',
