@@ -13,9 +13,10 @@
 </template>
 
 <script>
-  import { fsdb } from '../main.js';
-  import mealTemplate from '../components/MealTemplate.vue'
-  import mealPost from '../components/MealPost.vue'
+import { fsdb } from '../main.js'
+import mealTemplate from '../components/MealTemplate.vue'
+import mealPost from '../components/MealPost.vue'
+
 export default {
 	components: {
     mealTemplate,
@@ -23,38 +24,11 @@ export default {
   },
   data () {
 		return {
-			food: '',
-			calories: '',
-			alert: false,
       mealEntries: []
 		}
 	},
   firestore: {
     mealEntries: fsdb.collection('meals')
-  },
-	methods: {
-		uploadNutrition () {
-			this.$firestoreRefs.mealEntries.add({
-        food: this.food,
-        calories: this.calories,
-        user: {
-          username: this.$store.state.user.username,
-          email: this.$store.state.user.email,
-          uid: this.$store.state.user.uid
-        }
-      })
-      .catch(error => {
-        var errorMsg = 'Error uploading information'
-        console.log(errorMsg, error)
-      })
-      this.food = '';
-      this.calories = 0;
-		}
-	},
-	computed: {
-		loading () {
-			return this.$store.state.loading
-		}
-	}
+  }
 }
 </script>

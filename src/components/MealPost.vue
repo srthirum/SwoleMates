@@ -8,6 +8,7 @@
     <v-text-field
       v-model.trim="calories"
       label="Calories"
+      type="number"
       required
     ></v-text-field>
     <input type="file" @change="onFileChange">
@@ -18,9 +19,8 @@
 </template>
 
 <script>
-
 import { fsdb, storage } from '../main.js'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
 
 export default {
   name: 'mealPost',
@@ -28,6 +28,7 @@ export default {
     return {
       mealEntries: [],
       photoDescription: '',
+      calories: '',
       file: null
     }
   },
@@ -46,6 +47,7 @@ export default {
       })
       .then(docRef => {
         this.photoDescription = ''
+        this.calories = ''
         // then upload the image file
         uploadFile(docRef.id)
       })
@@ -55,7 +57,7 @@ export default {
       })
 
       var uploadFile = (docId) => {
-        var fileLocationName = docId + '/' + this.file.name
+        var fileLocationName = 'meals/' + this.$store.state.user.uid + '/' + docId + '/' + this.file.name
         storage.ref().child(fileLocationName).put(this.file)
         .then(snapshot => {
           // then edit the database item with the file location
@@ -72,7 +74,6 @@ export default {
           console.log(errorMsg, error)
         })
       }
-      this.calories = 0
     },
     onFileChange (e) {
       var files = e.target.files || e.dataTransfer.files
