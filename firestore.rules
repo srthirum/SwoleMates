@@ -1,0 +1,17 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+  	// Progress posts (aka progress-pic-items)
+  	// 	 - Authenticated users can read and create
+  	// 	 - Only the owner of an item can delete and update 
+    match /progress-post/{post} {
+      allow update, delete: if request.auth.uid == resource.data.user.uid;
+      allow read, create: if request.auth.uid != null; 
+    }
+    
+  	// Wildcard match all for development
+    match /{document=**} {
+      allow read, write: if request.auth.uid != null;
+    }
+  }
+}
