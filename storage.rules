@@ -21,8 +21,9 @@ service firebase.storage {
     //   - Must be authenticated
     //   - File is less than 10MB
     match /{document=**} {
-      allow read, write: if request.auth.uid != null
-                          && request.resource.size < 10 * 1024 * 1024
+      allow create, update: if request.auth.uid != null
+                            && request.resource.size < 10 * 1024 * 1024
+      allow read, delete: if request.auth.uid != null
     }
   }
 }
