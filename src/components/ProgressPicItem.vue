@@ -14,13 +14,18 @@
                           <img src="https://cdn.pixabay.com/photo/2013/07/13/12/07/avatar-159236_1280.png">
                         </v-avatar> {{item.user.username}}
                       </div>
-                      {{photoDate}}
+                      <div :title="dateString">
+                        {{photoDate}}
+                      </div>
                       <v-img
                         :src="imageUrl"
                         height="400px">
                       </v-img>
 
                       <v-card-actions>
+                        <v-spacer> 
+                          posted by: {{item.user.username}}
+                        </v-spacer>
                         <v-spacer>
                           {{item.description}} 
                         </v-spacer>
@@ -52,7 +57,9 @@
 </template>
 
 <script>
+
 import { fsdb, storage } from '../main.js'
+import { timeAgoDate } from '../util/time.js'
 
 export default {
   name: 'progress-pic-item',
@@ -70,6 +77,11 @@ export default {
   },
   computed: {
     photoDate: function () {
+      if (this.item.created) {
+        return timeAgoDate(this.item.created.seconds * 1000)
+      }
+    },
+    dateString: function () {
       if (this.item.created) {
         return new Date(this.item.created.seconds * 1000).toString()
       }
@@ -91,27 +103,29 @@ export default {
   },
   methods: {
     deleteItem: function () {
-      storage.ref().child(this.item.fileLocation).delete()
-      .catch(error => {
-        var errorMsg = 'Error deleting image file from storage'
-        console.log(errorMsg, error)
-      })
       this.$firestoreRefs.progressPicItems.doc(this.item.id).delete()
       .catch(error => {
         var errorMsg = 'Error deleting item from database'
         console.log(errorMsg, error)
       })
+      storage.ref().child(this.item.fileLocation).delete()
+      .catch(error => {
+        var errorMsg = 'Error deleting image file from storage'
+        console.log(errorMsg, error)
+      })
     },
     getImageUrl: function () {
-      if (this.item.fileLocation) {
-        storage.ref().child(this.item.fileLocation).getDownloadURL()
-        .then(url => {
-          this.imageUrl = url
-        })
-        .catch(error => {
-          var errorMsg = 'Error downloading image'
-          console.log(errorMsg, error)
-        })
+      if ('fileLocation' in this.item) {
+        if (this.item.fileLocation !== '') {
+          storage.ref().child(this.item.fileLocation).getDownloadURL()
+          .then(url => {
+            this.imageUrl = url
+          })
+          .catch(error => {
+            var errorMsg = 'Error downloading image'
+            console.log(errorMsg, error)
+          })
+        }
       }
     }
   }

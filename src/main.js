@@ -4,7 +4,10 @@ import router from './router'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import { store } from './store'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
+import 'firebase/storage'
 import VueFire from 'vuefire'
 
 Vue.use(Vuetify)
@@ -18,12 +21,12 @@ let app = firebase.initializeApp({
   storageBucket: 'swolemates-276ca.appspot.com',
   messagingSenderId: '816721714419'
 })
-
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 const unsubscribe = firebase.auth()
 .onAuthStateChanged((firebaseUser) => {
+
   new Vue({
     el: '#app',
     router,

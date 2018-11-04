@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
 
 const routerOptions = [
   { path: '/', component: 'Landing' },
   { path: '/signin', component: 'Signin' },
   { path: '/signup', component: 'Signup' },
   { path: '/home', component: 'Home', meta: { requiresAuth: true } },
+  { path: '/nutritionUpload', component: 'Nutrition'},
   { path: '*', component: 'NotFound' }
 ]
 
