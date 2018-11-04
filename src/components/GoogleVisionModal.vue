@@ -1,17 +1,18 @@
 <template>
   <div class="text-xs-center">
+    <v-progress-linear :indeterminate="progress"></v-progress-linear>
+    <v-btn
+    color="green lighten-2"
+    dark
+    @click.native='getLabels'
+    >
+    Get some nutrition info shit boi
+    </v-btn>
+
     <v-dialog
       v-model="dialog"
       width="500"
-    >
-      <v-btn
-        slot="activator"
-        color="green lighten-2"
-        dark
       >
-        Get some nutrition info shit boiiii
-      </v-btn>
-
       <v-card>
         <v-card-title
           class="headline grey lighten-2"
@@ -24,6 +25,8 @@
           Nutrition info shit goes here
 
           {{pictureUrl}}
+
+          {{message}}
         </v-card-text>
 
         <v-divider></v-divider>
@@ -45,14 +48,19 @@
 
 <script>
 import axios from 'axios'
+var progress = false
+var dialog  = false
+var message = '{}'
 
 export default {
   props: ['pictureUrl'],
-  data() {
-    return {
-      dialog : false
+  data : function () {
+    return{
+      progress,
+      dialog,
+      message
     }
-  },
+    },
   methods: {
     close: function () {
       this.$emit('close');
@@ -65,6 +73,43 @@ export default {
       this.close();
       dialog = false
       return dialog
+    },
+
+    greet: function () {
+      // `this` inside methods point to the Vue instance
+
+    },
+
+    getLabels: async (event) => {
+      progress = true
+      axios.post(
+        // endpoint = vision url + api key
+        "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE",
+        {
+          // input data
+          'requests':[
+            {
+              'image': {
+                'source':{
+                  'imageUri': 'https://firebasestorage.googleapis.com/v0/b/swolemates-276ca.appspot.com/o/16zXDi2sJx4bLabHoHrv%2F%24_1.jfif?alt=media&token=46a1327a-9aca-4738-969c-e9de0d533436'
+                }
+              },
+              'features':[
+                {
+                  'type':'LABEL_DETECTION'
+                }]}]}
+      ).then(function (response) {
+        console.log("success")
+        console.log(response.data)
+        progress = false
+        message = response.data
+        dialog = true
+      })
+      .catch(function (error) {
+        console.log(error.data)
+        alert("the shit fucked up with " + error)
+        this.message = error
+      })
     },
 
     NewInfo: function() {
