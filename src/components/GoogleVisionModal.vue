@@ -1,19 +1,31 @@
 <template>
   <div class="text-xs-center">
-    <v-progress-linear :indeterminate="progress"></v-progress-linear>
-    <v-btn
-    color="green lighten-2"
-    dark
-    @click.native='getLabels'
-    >
-    Get some nutrition info shit boi
-    </v-btn>
 
     <v-dialog
       v-model="dialog"
       width="500"
       >
+
+      <v-btn
+      slot='activator'
+      color="green lighten-2"
+      dark
+      @click.native='getLabels'
+      >
+      Get some nutrition info shit boi
+      </v-btn>
+
       <v-card>
+        <div v-if='inProgress'>
+          <v-card-title
+            class="headline grey lighten-2"
+            primary-title
+          >
+            Getting nutition Info mofo
+            <v-progress-linear :indeterminate="true"></v-progress-linear>
+          </v-card-title>
+        </div>
+        <div v-else>
         <v-card-title
           class="headline grey lighten-2"
           primary-title
@@ -41,6 +53,7 @@
             I accept
           </v-btn>
         </v-card-actions>
+      </div>
       </v-card>
     </v-dialog>
   </div>
@@ -48,7 +61,7 @@
 
 <script>
 import axios from 'axios'
-var progress = false
+var inProgress = true
 var dialog  = false
 var message = '{}'
 
@@ -56,7 +69,7 @@ export default {
   props: ['pictureUrl'],
   data : function () {
     return{
-      progress,
+      inProgress,
       dialog,
       message
     }
@@ -81,7 +94,7 @@ export default {
     },
 
     getLabels: async (event) => {
-      progress = true
+      inProgress = true
       axios.post(
         // endpoint = vision url + api key
         "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE",
