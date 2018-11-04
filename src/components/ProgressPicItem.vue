@@ -9,6 +9,11 @@
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
                     <v-flex>
+                      <div id="avatar" align="left">
+                        <v-avatar slot="activator" size="36px">
+                          <img src="https://cdn.pixabay.com/photo/2013/07/13/12/07/avatar-159236_1280.png">
+                        </v-avatar> {{item.user.username}}
+                      </div>
                       {{photoDate}}
                       <v-img
                         :src="imageUrl"
@@ -16,12 +21,14 @@
                       </v-img>
 
                       <v-card-actions>
-                        <v-spacer> posted by: {{item.user}}</v-spacer>
                         <v-spacer>
                           {{item.description}} 
                         </v-spacer>
                           <v-btn icon>
-                            <v-icon>favorite</v-icon>
+                            <v-icon>keyboard_arrow_up</v-icon>
+                          </v-btn>
+                          <v-btn icon>
+                            <v-icon>keyboard_arrow_down</v-icon>
                           </v-btn>
                           <v-btn icon>
                             <v-icon>bookmark</v-icon>
@@ -29,7 +36,7 @@
                           <v-btn icon>
                             <v-icon>share</v-icon>
                           </v-btn>
-                          <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
+                          <v-btn v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
                       </v-card-actions>
                       <v-flex> comments go here </v-flex>
                     </v-flex>
@@ -66,7 +73,16 @@ export default {
       if (this.item.created) {
         return new Date(this.item.created.seconds * 1000).toString()
       }
-    }
+    },
+
+    isOwner: function() {
+      // console.log(this.item.user.uid)
+      // console.log(this.$store.user.uid)
+      if(this.item.user.uid === this.$store.user)
+        return true 
+      else 
+        return false
+    },
   },
   watch: {
     item: function (newData, oldData) {
