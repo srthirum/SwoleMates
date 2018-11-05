@@ -10,7 +10,7 @@
       slot='activator'
       color="green lighten-2"
       dark
-      @click.native='getLabels'
+      @click.native='getInfo'
       >
       Get some nutrition info shit boi
       </v-btn>
@@ -73,20 +73,37 @@ export default {
     },
   methods: {
 
-    // get labels from google vision api
-    getLabels: function () {
+    getInfo: function () {
+      // set loading bar on
       this.inProgress = true
-      axios.post(
-        // endpoint = vision url + api key
-        "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE",
-        {
+      this.getLabels(this.pictureUrl)
+        .then(response => {
+          // set query data
+          this.query = response.data.responses[0].labelAnnotations[0].description
+          // gotten labels, now pass to nutritionx api to get info
+          this.getNutritionInfo(response.data.responses[0].labelAnnotations[0].description)
+          .then(data => {
+            // console.log("the shit returned by get that info is: "+data)
+            // update modal information
+            this.message = data
+            //done processing get rid of progress bar
+            this.inProgress = false
+          })
+        })
+    },
+
+    // get labels from google vision api
+    //returns a promise so use in async calls (call function with a .then afte)
+    getLabels: function (url) {
+      // parameters to pass into googlevision api
+      var parameters =   {
           // input data
           'requests':[
             {
               'image': {
                 'source':{
                   // get picture url from passed in props
-                  'imageUri': this.pictureUrl
+                  'imageUrl': url
                 }
               },
               'features':[
@@ -94,27 +111,20 @@ export default {
                   // want the labels associated with picture
                   'type':'LABEL_DETECTION'
                 }]}]}
+      // return a promise since this makes an async call
+      return axios.post(
+        // endpoint = vision url + api key
+        "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE", parameters
+
       ).then(response => {
+        return response
         // console.log("success")
         // console.log(this.pictureUrl)
         // console.log(response.data)
         // extract label field
-        this.query = response.data.responses[0].labelAnnotations[0].description
-        // gotten labels, now pass to nutritionx api to get info
-        this.getNutritionInfo(response.data.responses[0].labelAnnotations[0].description)
-        .then(data => {
-          // console.log("the shit returned by get that info is: "+data)
-          // update modal information
-          this.message = data
-          //done processing get rid of progress bar
-          this.inProgress = false
-          }
-        )
       })
       .catch(function (error) {
         console.log(error.data)
-        alert("the shit fucked up with " + error)
-        this.message = error
       })
     },
 
