@@ -34,11 +34,10 @@
         </v-card-title>
 
         <v-card-text>
-          Nutrition info shit goes here
+          Nutrition info shit goes here <br/>
+          The labels queried to nutritionX is: {{query}}<br/> <br/> <br/>
 
-          {{pictureUrl}}
-
-          {{message}}
+          The response is: <br/> <br/>{{message}}
         </v-card-text>
 
         <v-divider></v-divider>
@@ -68,28 +67,13 @@ export default {
     return{
       inProgress: false,
       dialog: false,
-      message: {}
+      query: {}, // labels from google vision
+      message: {} // nutrition information
       }
     },
   methods: {
-    close: function () {
-      this.$emit('close');
-      this.title = '';
-      this.body = '';
-    },
-    SaveInfo: function () {
-      // Some save logic goes here...
 
-      this.close();
-      dialog = false
-      return dialog
-    },
-
-    greet: function () {
-      // `this` inside methods point to the Vue instance
-
-    },
-
+    // get labels from google vision api
     getLabels: function () {
       this.inProgress = true
       axios.post(
@@ -107,18 +91,25 @@ export default {
               },
               'features':[
                 {
+                  // want the labels associated with picture
                   'type':'LABEL_DETECTION'
                 }]}]}
       ).then(response => {
-        console.log("success")
-        this.inProgress = false
-        console.log(this.pictureUrl)
-        console.log(response.data)
-        this.message = response.data
+        // console.log("success")
+        // console.log(this.pictureUrl)
+        // console.log(response.data)
+        // extract label field
+        this.query = response.data.responses[0].labelAnnotations[0].description
         // gotten labels, now pass to nutritionx api to get info
-        // info = getNutritionInfo(response.data)
-        // this.message = info
-        // dialog = true
+        this.getNutritionInfo(response.data.responses[0].labelAnnotations[0].description)
+        .then(data => {
+          // console.log("the shit returned by get that info is: "+data)
+          // update modal information
+          this.message = data
+          //done processing get rid of progress bar
+          this.inProgress = false
+          }
+        )
       })
       .catch(function (error) {
         console.log(error.data)
@@ -128,14 +119,14 @@ export default {
     },
 
     // nutritionx nutrion info getter
-    getNutritionInfo: (labels) => {
-      axios.get(
-        // endpoint = nutrionx search api
-        'https://api.nutritionix.com/v1_1/search',
-        {
-          // input data
+    getNutritionInfo: function(labels) {
+      // console.log("the labels are: "+ labels)
+      // parameters to pass into nutritionX
+      var parameters =   {
+          // input data to api
             "appId": "61d8ed61",
-            "appKey": "39b77e5e7266ec10cb9dc68e3020dcb1",
+            "appKey": "e4a75788c608ec7da58220c3e25540dc",
+            // the fields we want the api to return
             "fields": [
               "item_name",
               "brand_name",
@@ -143,39 +134,42 @@ export default {
               "nf_sodium",
               "item_type"
             ],
-            "offset": 0,
-            "limit": 50,
+            // sorting criteria
             "sort": {
               "field": "nf_calories",
               "order": "desc"
             },
+            // only return items with at least 50% match
             "min_score": 0.5,
+            // query about the vision returned food labels
             "query": labels,
+            // only get USDA information (no consumer packaged goods stuff)
             "filters": {
               "not": {
                 "item_type": 2
               },
+              // only return results with calories within this range
               "nf_calories": {
                 "from": 0,
-                "to": 20
+                "to": 5000
               }
             }
         }
+        // must return a promise
+        // since the calling function is awaiting labels, only return on a promise fullfillment
+        return axios.post(
+        // endpoint = nutrionx search api, parameters = defined above
+        'https://api.nutritionix.com/v1_1/search', parameters
       )
-      .then((response) => {
-        return response.data
-      }
-    )
-    .catch((error) => {
-      console.error("there was an error getting nutrition information:" + error.data)
-    })
-    },
-
-    NewInfo: function() {
-      dialog = false
-      return dialog
+      .then(response => {
+        // console.log("got the shit: " + JSON.stringify(response.data))
+        return JSON.stringify(response.data)
+      })
+      .catch(error => {
+      console.error("there was an error getting nutrition information:" + error)
+      })
     }
-    }
+  }
 }
 
 </script>
