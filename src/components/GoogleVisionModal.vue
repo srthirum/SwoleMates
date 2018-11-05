@@ -73,15 +73,17 @@ export default {
     },
   methods: {
 
+    // wrapper function for vision and nutritionX
+    // also takes care of html loading bar and shit
     getInfo: function () {
       // set loading bar on
       this.inProgress = true
       this.getLabels(this.pictureUrl)
         .then(response => {
           // set query data
-          this.query = response.data.responses[0].labelAnnotations[0].description
+          this.query = response.responses[0].labelAnnotations[0].description
           // gotten labels, now pass to nutritionx api to get info
-          this.getNutritionInfo(response.data.responses[0].labelAnnotations[0].description)
+          this.getNutritionInfo(response.responses[0].labelAnnotations[0].description)
           .then(data => {
             // console.log("the shit returned by get that info is: "+data)
             // update modal information
@@ -103,7 +105,7 @@ export default {
               'image': {
                 'source':{
                   // get picture url from passed in props
-                  'imageUrl': url
+                  'imageUri': url
                 }
               },
               'features':[
@@ -117,14 +119,14 @@ export default {
         "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE", parameters
 
       ).then(response => {
-        return response
+        return response.data
         // console.log("success")
         // console.log(this.pictureUrl)
         // console.log(response.data)
         // extract label field
       })
       .catch(function (error) {
-        console.log(error.data)
+        console.log(error.response.data)
       })
     },
 
@@ -173,7 +175,7 @@ export default {
       )
       .then(response => {
         // console.log("got the shit: " + JSON.stringify(response.data))
-        return JSON.stringify(response.data)
+        return response.data
       })
       .catch(error => {
       console.error("there was an error getting nutrition information:" + error)
