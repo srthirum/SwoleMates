@@ -6,7 +6,7 @@
       required
     ></v-text-field>
     <input type="file" @change="onFileChange">
-    <v-btn @click="postProgressItem">
+    <v-btn :disabled="!file" @click="postProgressItem">
       Post
     </v-btn>
   </v-form>
