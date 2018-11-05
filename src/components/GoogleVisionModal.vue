@@ -61,19 +61,15 @@
 
 <script>
 import axios from 'axios'
-var inProgress = true
-var dialog  = false
-var message = '{}'
 
 export default {
   props: ['pictureUrl'],
-  data : function () {
+  data () {
     return{
-      inProgress,
-      dialog,
-      pictureUrl : pictureUrl,
-      message
-    }
+      inProgress: false,
+      dialog: false,
+      message: {}
+      }
     },
   methods: {
     close: function () {
@@ -94,8 +90,8 @@ export default {
 
     },
 
-    getLabels: async (event) => {
-      inProgress = true
+    getLabels: function () {
+      this.inProgress = true
       axios.post(
         // endpoint = vision url + api key
         "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE",
@@ -106,21 +102,23 @@ export default {
               'image': {
                 'source':{
                   // get picture url from passed in props
-                  'imageUri': pictureUrl
+                  'imageUri': this.pictureUrl
                 }
               },
               'features':[
                 {
                   'type':'LABEL_DETECTION'
                 }]}]}
-      ).then(function (response) {
+      ).then(response => {
         console.log("success")
+        this.inProgress = false
+        console.log(this.pictureUrl)
         console.log(response.data)
+        this.message = response.data
         // gotten labels, now pass to nutritionx api to get info
-        info = getNutritionInfo(response.data)
-        progress = false
-        message = info
-        dialog = true
+        // info = getNutritionInfo(response.data)
+        // this.message = info
+        // dialog = true
       })
       .catch(function (error) {
         console.log(error.data)
