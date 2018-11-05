@@ -71,6 +71,7 @@ export default {
     return{
       inProgress,
       dialog,
+      pictureUrl : pictureUrl,
       message
     }
     },
@@ -104,7 +105,8 @@ export default {
             {
               'image': {
                 'source':{
-                  'imageUri': 'https://firebasestorage.googleapis.com/v0/b/swolemates-276ca.appspot.com/o/16zXDi2sJx4bLabHoHrv%2F%24_1.jfif?alt=media&token=46a1327a-9aca-4738-969c-e9de0d533436'
+                  // get picture url from passed in props
+                  'imageUri': pictureUrl
                 }
               },
               'features':[
@@ -114,8 +116,10 @@ export default {
       ).then(function (response) {
         console.log("success")
         console.log(response.data)
+        // gotten labels, now pass to nutritionx api to get info
+        info = getNutritionInfo(response.data)
         progress = false
-        message = response.data
+        message = info
         dialog = true
       })
       .catch(function (error) {
@@ -123,6 +127,50 @@ export default {
         alert("the shit fucked up with " + error)
         this.message = error
       })
+    },
+
+    // nutritionx nutrion info getter
+    getNutritionInfo: (labels) => {
+      axios.get(
+        // endpoint = nutrionx search api
+        'https://api.nutritionix.com/v1_1/search',
+        {
+          // input data
+            "appId": "61d8ed61",
+            "appKey": "39b77e5e7266ec10cb9dc68e3020dcb1",
+            "fields": [
+              "item_name",
+              "brand_name",
+              "nf_calories",
+              "nf_sodium",
+              "item_type"
+            ],
+            "offset": 0,
+            "limit": 50,
+            "sort": {
+              "field": "nf_calories",
+              "order": "desc"
+            },
+            "min_score": 0.5,
+            "query": labels,
+            "filters": {
+              "not": {
+                "item_type": 2
+              },
+              "nf_calories": {
+                "from": 0,
+                "to": 20
+              }
+            }
+        }
+      )
+      .then((response) => {
+        return response.data
+      }
+    )
+    .catch((error) => {
+      console.error("there was an error getting nutrition information:" + error.data)
+    })
     },
 
     NewInfo: function() {
