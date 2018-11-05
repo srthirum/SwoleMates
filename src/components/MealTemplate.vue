@@ -54,8 +54,6 @@ export default {
   },
   methods: {
     deleteItem: function () {
-      console.log("Trying to delete item with id: " + this.item.id)
-      console.log("Firestore Ref: " + this.$firestoreRefs.mealItems)
       this.$firestoreRefs.mealItems.doc(this.item.id).delete()
       .catch(error => {
         var errorMsg = 'Error deleting item from database'
