@@ -24,10 +24,10 @@
 
                       <v-card-actions>
                         <v-spacer> 
-                          posted by: {{item.user.username}}
+                          posted by: {{item.user.email}}
                         </v-spacer>
                         <v-spacer>
-                          {{item.description}} 
+                          {{item.description}}
                         </v-spacer>
                           <v-btn icon>
                             <v-icon>keyboard_arrow_up</v-icon>
@@ -88,9 +88,7 @@ export default {
     },
 
     isOwner: function() {
-      // console.log(this.item.user.uid)
-      // console.log(this.$store.user.uid)
-      if(this.item.user.uid === this.$store.user)
+      if(this.item.user.uid === this.$store.state.user.uid)
         return true 
       else 
         return false
