@@ -9,9 +9,12 @@ service cloud.firestore {
       allow read, create: if request.auth.uid != null; 
     }
     
-  	// Wildcard match all for development
-    match /{document=**} {
-      allow read, write: if request.auth.uid != null;
+    // Meal posts 
+    //   - Authenticated users can read and create
+    //   - Only the owner of an item can delete and update 
+    match /meals/{post} {
+      allow update, delete: if request.auth.uid == resource.data.user.uid;
+      allow read, create: if request.auth.uid != null; 
     }
   }
 }
