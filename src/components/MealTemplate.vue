@@ -13,11 +13,22 @@
               <br> posted by {{ item.user.username }}
             </h3>
           </div>
+          <v-form>
+            <v-text-field
+              v-model.trim="newComment"
+              label="Comment..."
+              required
+            ></v-text-field>
+            <v-btn @click="postComment">
+              Post Comment
+            </v-btn>
+          </v-form>
         </v-card-title>
 
         <v-card-actions>
           <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
         </v-card-actions>
+        <p v-for="comment in item.comments"> {{ comment.text }} </p>
       </v-card>
     </v-flex>
   </v-layout>
@@ -31,7 +42,8 @@ export default {
   props: ['item'],
   data () {
     return {
-      imageUrl: 'https://bluewater.co.uk/sites/bluewater/files/styles/image_spotlight_large/public/images/spotlights/burger-cropped.jpg?itok=SeFYMFP6'
+      newComment: "",
+      imageUrl: ""
     }
   },
   mounted: function () {
@@ -76,6 +88,8 @@ export default {
           console.log(errorMsg, error)
         })
       }
+    }, postComment: function () {
+      console.log("PostComment: " + this.newComment);
     }
   }
 }
