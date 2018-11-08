@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import router from '@/router'
+import { fsdb } from '../main.js'
 
 Vue.use(Vuex)
 
@@ -29,6 +30,7 @@ export const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
+        createUserDoc(firebaseUser)
         commit('setUser', {
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
@@ -81,8 +83,7 @@ export const store = new Vuex.Store({
       var provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(provider)
       .then(firebaseUser => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        // var token = firebaseUser.credential.accessToken
+        createUserDoc(firebaseUser)
         commit('setUser', {
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
@@ -93,14 +94,7 @@ export const store = new Vuex.Store({
         commit('setError', null)
         router.push('/home')
       }).catch(error => {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
+        commit('setError', error.message)
       })
     }
   },
@@ -110,3 +104,25 @@ export const store = new Vuex.Store({
     }
   }
 })
+
+// create user document if first time logging in
+var createUserDoc = function (firebaseUserObject) {
+  var userDocumentRef = fsdb.collection('users').doc(firebaseUserObject.user.uid)
+  userDocumentRef.get()
+  .then(doc => {
+    if (doc.exists === false) {
+      userDocumentRef.set({
+        username: firebaseUserObject.user.displayName,
+        firstName: "",
+        lastName: "",
+        email: firebaseUserObject.user.email,
+        likedProgressPics: [],
+        likedMeals: [],
+      })
+    }
+  })
+  .catch(error => {
+    commit('setError', error.message)
+    console.log("Error getting document:", error)
+  })
+}
