@@ -9,41 +9,40 @@
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
                     <v-flex>
-                      <div id="avatar" align="left">
+
+                      <div id="avatar" style="display:inline-block; float:left; padding-bottom:5px;" align="left">
                         <v-avatar slot="activator" size="36px">
-                          <img src="https://cdn.pixabay.com/photo/2013/07/13/12/07/avatar-159236_1280.png">
-                        </v-avatar> {{item.user.username}}
+                          <img src="https://t3.ftcdn.net/jpg/00/64/67/52/240_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg">
+                        </v-avatar> &nbsp; {{item.user.username}}
                       </div>
-                      <div :title="dateString">
+
+                      <div id="timestamp" style="display:inline-block; float:right; padding-top:8px; padding-bottom:10px; color: #a0a6b2; font-size:12px;" :title="dateString">
                         {{photoDate}}
                       </div>
-                      <v-img
-                        :src="imageUrl"
-                        height="400px">
-                      </v-img>
+                      <br><br>
 
-                      <v-card-actions>
-                        <v-spacer> 
-                          posted by: {{item.user.email}}
-                        </v-spacer>
-                        <v-spacer>
-                          {{item.description}}
-                        </v-spacer>
-                          <v-btn icon>
-                            <v-icon>keyboard_arrow_up</v-icon>
+                      <div id="image">
+                        <v-img
+                          :src="imageUrl"
+                          height="400px">
+                        </v-img>
+                      </div>
+
+                      <v-card-actions align="right">
+                          <v-btn v-show="isLiked" flat color="red" @click="isLiked = !isLiked; likeItem()" icon>
+                            <v-icon>favorite</v-icon>{{item.likes}}
+                          </v-btn>
+                          <v-btn v-show="!isLiked" @click="isLiked = !isLiked; likeItem()" icon>
+                            <v-icon>favorite</v-icon>{{item.likes}}
                           </v-btn>
                           <v-btn icon>
-                            <v-icon>keyboard_arrow_down</v-icon>
+                            <v-icon>send</v-icon>
                           </v-btn>
-                          <v-btn icon>
-                            <v-icon>bookmark</v-icon>
-                          </v-btn>
-                          <v-btn icon>
-                            <v-icon>share</v-icon>
-                          </v-btn>
-                          <v-btn v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
+                          <v-btn style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
                       </v-card-actions>
-                      <v-flex> comments go here </v-flex>
+                        <v-spacer align="left">
+                          &nbsp; &nbsp; &nbsp; {{item.description}}
+                        </v-spacer>
                     </v-flex>
                 </v-layout>
 
@@ -66,7 +65,8 @@ export default {
   props: ['item'],
   data () {
     return {
-      imageUrl: ''
+      imageUrl: '',
+      isLiked: false
     }
   },
   mounted: function () {
@@ -88,6 +88,7 @@ export default {
     },
 
     isOwner: function() {
+      //compare user owner === auth user
       if(this.item.user.uid === this.$store.state.user.uid)
         return true 
       else 
@@ -112,6 +113,15 @@ export default {
         console.log(errorMsg, error)
       })
     },
+
+    likeItem: function () {
+      if(this.isLiked == true)
+        this.item.likes++
+      else
+        this.item.likes--
+      this.$firestoreRefs.progressPicItems.doc(this.item.id).update({likes: this.item.likes})
+    },
+
     getImageUrl: function () {
       if ('fileLocation' in this.item) {
         if (this.item.fileLocation !== '') {

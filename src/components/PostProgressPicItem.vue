@@ -5,10 +5,14 @@
       label="Description"
       required
     ></v-text-field>
-    <input type="file" @change="onFileChange">
-    <v-btn :disabled="!file" @click="postProgressItem">
-      Post
-    </v-btn>
+    
+    <v-form @submit.prevent="postProgressItem">
+      <input type="file" @change="onFileChange">
+      <v-btn type="submit" :disabled="!file" onClick="this.form.reset()">
+        Post
+      </v-btn>
+    </v-form>
+
   </v-form>
 </template>
 
@@ -23,12 +27,36 @@ export default {
     return {
       progressPicItems: [],
       photoDescription: '',
+      likes: 0,
       file: null
     }
   },
   firestore: {
     progressPicItems: fsdb.collection('progress-post')
   },
+
+    computed: {
+    photoDate: function () {
+      if (this.item.created) {
+        return timeAgoDate(this.item.created.seconds * 1000)
+      }
+    },
+    dateString: function () {
+      if (this.item.created) {
+        return new Date(this.item.created.seconds * 1000).toString()
+      }
+    },
+
+    isOwner: function() {
+      //compare user owner === auth user
+      if(this.item.user.uid === this.$store.state.user.uid)
+        return true 
+      else 
+        return false
+    },
+  },
+
+
   methods: {
     postProgressItem: function () {
       // first create item in firestore database
@@ -36,7 +64,8 @@ export default {
         description: this.photoDescription,
         created: firebase.firestore.FieldValue.serverTimestamp(),
         user: this.$store.state.user,
-        fileLocation: ''
+        fileLocation: '',
+        likes: this.likes
       })
       .then(docRef => {
         this.photoDescription = ''
