@@ -24,11 +24,8 @@
 
                       <v-card-actions>
                         <v-spacer>
-<<<<<<< HEAD
                           posted by: {{item.user.email}}
-=======
                           {{item.description}}
->>>>>>> 43d445af2d57e05c37a1c6c79882a16707bd071f
                         </v-spacer>
                         <v-spacer>
                           {{item.description}}

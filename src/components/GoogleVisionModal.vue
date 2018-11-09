@@ -60,6 +60,31 @@
 
 <script>
 import axios from 'axios'
+// data for vision and nutrition tweaking to improve results
+// how many of the top vision results to send to nutritionX
+var _numberOfResultsToSend = 3
+// how to send the data (either AND OR *(wildcard) " "(space))
+var _glue = " "
+// which fields to return from nutritionX
+var _fields = [
+  "item_name",
+  "brand_name",
+  "nf_calories",
+  "nf_sodium",
+  "nf_serving_weight_grams",
+  "item_type"
+]
+// minimal matching score from nutritionX
+var _minScore = 0.5
+// sources to ignore for data 1 = Restaurant, 2 = Grocery, 3 = Common food
+var _sources = {
+  "item_type": 1
+}
+// calorie range for returned food
+var _calorieRange = {
+  "from": 0,
+  "to": 5000
+}
 
 export default {
   props: ['pictureUrl'],
@@ -80,18 +105,34 @@ export default {
       this.inProgress = true
       this.getLabels(this.pictureUrl)
         .then(response => {
-          // set query data
-          this.query = response.responses[0].labelAnnotations[0].description
+          console.log("the response is: "+response)
+          // set query data and get top 3 results
+          var query = response.slice(0,_numberOfResultsToSend).join(_glue)
+          this.query = query
+          // console.log("query is: "+this.query)
           // gotten labels, now pass to nutritionx api to get info
-          this.getNutritionInfo(response.responses[0].labelAnnotations[0].description)
+          this.getNutritionInfo(query)
           .then(data => {
-            // console.log("the shit returned by get that info is: "+data)
+             console.log("the shit returned by get that info is: "+JSON.stringify(data))
             // update modal information
-            this.message = data
+            console.log("the shit to extract is " + JSON.stringify(data.hits[0]))
+            this.message = this.extractFields(data.hits[0].fields)
             //done processing get rid of progress bar
             this.inProgress = false
           })
         })
+        .catch(error => {
+          console.error("there was a fuckup getting nutrition info: " + error)
+        })
+    },
+
+    // format json fields to correct dictionary
+    extractFields: function(labels) {
+      return {
+        "calories": labels.nf_calories,
+        "name": labels.item_name,
+        "serving_size (grams)": labels.nf_serving_weight_grams
+      }
     },
 
     // get labels from google vision api
@@ -119,14 +160,32 @@ export default {
         "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDKeLsWxRS_tg5zzkD1qlw-ot5Jl_MZFyE", parameters
 
       ).then(response => {
-        return response.data
+        // extract descriptor field from vision response
+        function listify(labels){
+          // console.log("response is: " +JSON.stringify(response.data.responses[0].labelAnnotations))
+          var list = []
+          var labelAnnotations = labels.data.responses[0].labelAnnotations
+          for(var item in labelAnnotations) {
+            // console.log("item is: " + labelAnnotations[item].description)
+            list.push(labelAnnotations[item].description)
+          }
+          // console.log("list is: "+list)
+          return list
+        }
+        try {
+          var labels = listify(response)
+        } catch (e) {
+          console.error("there was an error listifying labels: " + error)
+        } finally {
+          return labels
+        }
         // console.log("success")
         // console.log(this.pictureUrl)
         // console.log(response.data)
         // extract label field
       })
       .catch(function (error) {
-        console.log(error.response.data)
+        console.error("error getting labels :" + error)
       })
     },
 
@@ -139,32 +198,21 @@ export default {
             "appId": "61d8ed61",
             "appKey": "e4a75788c608ec7da58220c3e25540dc",
             // the fields we want the api to return
-            "fields": [
-              "item_name",
-              "brand_name",
-              "nf_calories",
-              "nf_sodium",
-              "item_type"
-            ],
+            "fields": _fields,
             // sorting criteria
             "sort": {
               "field": "nf_calories",
               "order": "desc"
             },
             // only return items with at least 50% match
-            "min_score": 0.5,
+            "min_score": _minScore,
             // query about the vision returned food labels
             "query": labels,
-            // only get USDA information (no consumer packaged goods stuff)
+            // no restaurant (1) or grocery food (2) data
             "filters": {
-              "not": {
-                "item_type": 2
-              },
+              "not": _sources,
               // only return results with calories within this range
-              "nf_calories": {
-                "from": 0,
-                "to": 5000
-              }
+              "nf_calories": _calorieRange
             }
         }
         // must return a promise
