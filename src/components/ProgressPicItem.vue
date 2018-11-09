@@ -1,13 +1,13 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm6 offset-sm3>
+    <v-flex xs20 sm6 offset-sm5>
 
       <div id="progress-pic">
         <v-app id="v-progress-pic">
-          <v-flex> 
+          <v-flex>
             <v-card>
               <v-container fluid grid-list-md>
-                <v-layout row wrap>
+                <v-layout justify-end row>
                     <v-flex>
                       {{photoDate}}
                       <v-img
@@ -18,7 +18,7 @@
                       <v-card-actions>
                         <v-spacer> posted by: {{item.user}}</v-spacer>
                         <v-spacer>
-                          {{item.description}} 
+                          {{item.description}}
                         </v-spacer>
                           <v-btn icon>
                             <v-icon>favorite</v-icon>

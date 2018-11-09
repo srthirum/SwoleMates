@@ -1,5 +1,8 @@
 <template>
-  <v-layout>
+<v-container grid-list-xl>
+  <v-layout row wrap>
+
+
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
         <v-img
@@ -21,6 +24,7 @@
       </v-card>
     </v-flex>
   </v-layout>
+</v-container>
 </template>
 
 <script>

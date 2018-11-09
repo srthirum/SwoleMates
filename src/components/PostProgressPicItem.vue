@@ -1,9 +1,10 @@
 <template>
   <v-container grid-list-xl>
-     <v-layout row wrap>
 
-       <v-flex d-flex xs12 sm10 md4>
-         <v-card dark color="orange">
+       <v-layout  row fill-height>
+
+       <v-flex d-flex xs12 sm15 md4>
+         <v-card dark color="blue">
            <v-card-title primary class="title"></v-card-title>
            <v-card-text>
              <div class="text-xs-center">
@@ -21,19 +22,27 @@
               <v-btn flat color="white darken-4">Meal Plan</v-btn>
             </v-layout>
           </div>
-
-
-
+          <v-card text
+        
 
            </v-card-text>
          </v-card>
        </v-flex>
 
 
+
+
       <v-flex>
-        <v-card dark color="orange">
+        <v-card dark color="blue">
+
+
           <v-card-text>
             <v-form>
+              <v-text-field
+                v-model.trim="photoTitle"
+                label="Title"
+                required
+              ></v-text-field>
               <v-text-field
                 v-model.trim="photoDescription"
                 label="Description"
@@ -45,12 +54,11 @@
               </v-btn>
             </v-form>
           </v-card-text>
-
-
         </v-card>
-
-  
+        </v-card>
   </v-flex>
+
+
 
 
       </v-layout>
@@ -67,6 +75,7 @@ export default {
   data () {
     return {
       progressPicItems: [],
+      photoTitle: '',
       photoDescription: '',
       file: null
     }
@@ -78,6 +87,7 @@ export default {
     postProgressItem: function () {
       // first create item in firestore database
       this.$firestoreRefs.progressPicItems.add({
+        title: this.photoTitle,
         description: this.photoDescription,
         created: firebase.firestore.FieldValue.serverTimestamp(),
         user: this.$store.state.user.email,
@@ -85,6 +95,8 @@ export default {
       })
       .then(docRef => {
         this.photoDescription = ''
+        this.photoTitle = ''
+
         // then upload the image file
         uploadFile(docRef.id)
       })
@@ -119,6 +131,7 @@ export default {
       }
       this.file = files[0]
     }
+
   }
 }
 </script>

@@ -66,4 +66,5 @@ export const store = new Vuex.Store({
       return state.user !== null && state.user !== undefined
     }
   }
+
 })
