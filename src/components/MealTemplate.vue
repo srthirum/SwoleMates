@@ -28,7 +28,10 @@
         <v-card-actions>
           <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
         </v-card-actions>
-        <p v-for="comment in item.comments"> {{ comment.text }} </p>
+        <h4>Comments</h4>
+        <div v-for="comment in item.comments">
+         <h5>{{ comment.user.email }}:</h5> <p>{{ comment.commentText }} </p>
+          </div>
       </v-card>
     </v-flex>
   </v-layout>
@@ -36,6 +39,7 @@
 
 <script>
 import { fsdb, storage } from '../main.js'
+import firebase from 'firebase/app'
 
 export default {
   name: 'mealTemplate',
@@ -49,8 +53,11 @@ export default {
   mounted: function () {
     this.getImageUrl()
   },
-  firestore: {
-    mealItems: fsdb.collection('meals')
+  firestore () {
+    return {
+      mealItems: fsdb.collection('meals')
+    }
+    
   },
   computed: {
     photoDate: function () {
@@ -90,6 +97,17 @@ export default {
       }
     }, postComment: function () {
       console.log("PostComment: " + this.newComment);
+      var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
+      
+      reference.update({
+        comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
+        user: this.$store.state.user })
+       })
+      .catch(error => {
+        var errorMsg = 'Error creating comment'
+        console.error(errorMsg, error)
+      })
+      this.newComment = "";
     }
   }
 }

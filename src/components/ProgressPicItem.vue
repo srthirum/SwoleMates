@@ -43,7 +43,20 @@
                           </v-btn>
                           <v-btn v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
                       </v-card-actions>
-                      <v-flex> comments go here </v-flex>
+                      <v-form>
+                        <v-text-field
+                          v-model.trim="newComment"
+                          label="Comment..."
+                          required
+                        ></v-text-field>
+                        <v-btn @click="postComment">
+                          Post Comment
+                        </v-btn>
+                      </v-form>
+                      <h4>Comments</h4>
+                      <div v-for="comment in item.comments">
+                       <h5>{{ comment.user.email }}:</h5> <p>{{ comment.commentText }} </p>
+                        </div>
                     </v-flex>
                 </v-layout>
 
@@ -60,13 +73,15 @@
 
 import { fsdb, storage } from '../main.js'
 import { timeAgoDate } from '../util/time.js'
+import firebase from 'firebase/app'
 
 export default {
   name: 'progress-pic-item',
   props: ['item'],
   data () {
     return {
-      imageUrl: ''
+      imageUrl: '',
+      newComment: ''
     }
   },
   mounted: function () {
@@ -125,6 +140,19 @@ export default {
           })
         }
       }
+    }, postComment: function () {
+      console.log("PostComment: " + this.newComment);
+      var reference = this.$firestoreRefs.progressPicItems.doc(this.item.id);
+      
+      reference.update({
+        comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
+        user: this.$store.state.user })
+       })
+      .catch(error => {
+        var errorMsg = 'Error creating comment'
+        console.error(errorMsg, error)
+      })
+      this.newComment = "";
     }
   }
 }
