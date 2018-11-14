@@ -9,6 +9,7 @@ const routerOptions = [
   { path: '/signup', component: 'Signup' },
   { path: '/home', component: 'Home', meta: { requiresAuth: true } },
   { path: '/nutritionUpload', component: 'Nutrition'},
+  { path: '/user/:uid', component: 'User'},
   { path: '*', component: 'NotFound' }
 ]
 
