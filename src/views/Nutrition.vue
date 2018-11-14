@@ -4,9 +4,16 @@
       <v-flex xs12 class="text-xs-center" mt-5>
         <h1>Meal Upload</h1>
       </v-flex>
-      <v-flex xs12 sm6 offset-sm3 mt-3>
-        <mealPost></mealPost>
-          <mealTemplate v-for="meal in mealEntries" :key='meal.id' :item='meal'></mealTemplate>
+      <v-flex xs12 class="text-xs-center" mt-3>
+        <mealPost>
+        </mealPost>
+        
+        <mealTemplate
+          v-for='meal in mealEntries'
+          :key='meal.id'
+          :item="meal"
+        >
+        </mealTemplate>
       </v-flex>
     </v-layout>
   </v-container>
