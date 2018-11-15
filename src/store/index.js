@@ -69,7 +69,6 @@ export const store = new Vuex.Store({
         emailVerified: payload.emailVerified,
         uid: payload.uid
       })
-      router.push('/home')
     },
     userSignOut ({commit}) {
       firebase.auth().signOut()
