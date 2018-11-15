@@ -2,7 +2,7 @@
   <v-form>
     <v-text-field
       v-model.trim="photoDescription"
-      label="Food"
+      label="Meal"
       required
     ></v-text-field>
     <v-text-field
@@ -11,10 +11,12 @@
       type="number"
       required
     ></v-text-field>
-    <input type="file" @change="onFileChange">
-    <v-btn @click="postMealPhoto">
-      Post
-    </v-btn>
+    <v-form @submit.prevent="postMealPhoto">
+      <input type="file" @change="onFileChange">
+      <v-btn type="submit" :disabled="!file" onClick="this.form.reset()">
+        Post
+      </v-btn>
+    </v-form>
   </v-form>
 </template>
 
@@ -29,6 +31,7 @@ export default {
       mealEntries: [],
       photoDescription: '',
       calories: '',
+      likes: 0,
       file: null
     }
   },
