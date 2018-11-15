@@ -6,7 +6,7 @@ import 'firebase/auth'
 const routerOptions = [
   { path: '/', component: 'Landing', beforeEnter: (to, from, next) => {
     const isAuthenticated = firebase.auth().currentUser
-    if (isAuthenticated) { next('/home') }}
+    if (isAuthenticated) { next('/home') } else { next() }}
   },
   { path: '/signin', component: 'Signin' },
   { path: '/signup', component: 'Signup' },
