@@ -1,15 +1,38 @@
 <template>
-  <v-form>
-    <v-text-field
-      v-model.trim="photoDescription"
-      label="Description"
-      required
-    ></v-text-field>
-    <input type="file" @change="onFileChange">
-    <v-btn :disabled="!file" @click="postProgressItem">
-      Post
-    </v-btn>
-  </v-form>
+  <v-app id="dialog_box">
+    <v-layout row justify-center>
+      <v-btn icon color="primary" dark @click="dialog=true"
+      >
+        <v-icon>
+          add_box
+        </v-icon>
+      </v-btn>
+      <v-dialog
+        v-model="dialog"
+        max-width="290"
+      >
+        <v-card>
+          <v-card-title class="headline">Upload Your Photo</v-card-title> 
+            <v-form>
+              <v-text-field 
+                v-model.trim="photoDescription" 
+                label="Description" 
+                required>
+              </v-text-field>
+            <input type="file" @change="onFileChange">
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn 
+                :disabled="!file" 
+                @click="postProgressItem">
+                Post
+              </v-btn>
+            </v-card-actions>
+            </v-form>
+        </v-card>
+      </v-dialog>
+    </v-layout>
+  </v-app>
 </template>
 
 <script>
@@ -23,7 +46,8 @@ export default {
     return {
       progressPicItems: [],
       photoDescription: '',
-      file: null
+      file: null,
+      dialog: false,
     }
   },
   firestore: {
