@@ -11,7 +11,7 @@
 
                     <div class="avatar" style="" align="left">
                       <v-avatar slot="activator" size="36px">
-                        <img src="https://t3.ftcdn.net/jpg/00/64/67/52/240_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg">
+                        <img :src="item.user.profPhotoUrl">
                       </v-avatar> &nbsp; {{item.user.username}}
                     </div>
 
