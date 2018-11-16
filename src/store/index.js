@@ -50,6 +50,7 @@ export const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
+        createUserDoc(firebaseUser)
         commit('setUser', {
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
