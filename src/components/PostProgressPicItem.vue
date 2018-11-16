@@ -32,7 +32,9 @@ export default {
     }
   },
   firestore: {
-    progressPicItems: fsdb.collection('progress-post')
+    progressPicItems: fsdb.collection('progress-post'),
+    // likedBy: fsdb.collection('progress-post').doc().collection('likedBy')
+
   },
 
     computed: {
@@ -69,6 +71,9 @@ export default {
       })
       .then(docRef => {
         this.photoDescription = ''
+        this.$firestoreRefs.progressPicItems.doc(docRef.id).collection('likedBy').add({
+          liker: '',
+        })
         // then upload the image file
         uploadFile(docRef.id)
       })
