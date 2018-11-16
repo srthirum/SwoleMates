@@ -115,11 +115,14 @@ export default {
     },
 
     likeItem: function () {
-      if(this.isLiked == true)
-        this.item.likes++
-      else
-        this.item.likes--
-      this.$firestoreRefs.progressPicItems.doc(this.item.id).update({likes: this.item.likes})
+      // if(this.isLiked == true)
+      //   this.item.likes++
+      // else
+      //   this.item.likes--
+      // this.$firestoreRefs.progressPicItems.doc(this.item.id).update({likes: this.item.likes})
+      this.$firestoreRefs.progressPicItems.doc(this.item.id).collection('likedBy').add({
+          liker: '',
+        })
     },
 
     getImageUrl: function () {
