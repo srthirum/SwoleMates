@@ -11,7 +11,7 @@
                     <v-flex>
                       <div id="avatar" align="left">
                         <v-avatar slot="activator" size="36px">
-                          <img src="https://cdn.pixabay.com/photo/2013/07/13/12/07/avatar-159236_1280.png">
+                          <img :src="item.user.profPhotoUrl">
                         </v-avatar> {{item.user.username}}
                       </div>
                       <div :title="dateString">
@@ -86,13 +86,9 @@ export default {
         return new Date(this.item.created.seconds * 1000).toString()
       }
     },
-
     isOwner: function() {
-      if(this.item.user.uid === this.$store.state.user.uid)
-        return true 
-      else 
-        return false
-    },
+      return (this.item.user.uid === this.$store.state.user.uid) ? true : false
+    }
   },
   watch: {
     item: function (newData, oldData) {

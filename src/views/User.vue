@@ -8,6 +8,11 @@
       </v-flex>
 
       <v-flex xs12 class="text-xs-center" mt-3 v-if="user">
+        <v-spacer class="py-5">
+          <v-avatar size="256px">
+            <img :src="user.profPhotoUrl">
+          </v-avatar>
+        </v-spacer>
         <v-spacer>
           username: {{ user.username }}
         </v-spacer>
@@ -39,7 +44,7 @@
           <mealTemplate 
             v-for="meal in userMeals" 
             :key='meal.id' 
-            :item='meal'>              
+            :item='meal'>
           </mealTemplate>
         </v-spacer>
       </v-flex>

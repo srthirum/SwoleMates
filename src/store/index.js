@@ -35,7 +35,8 @@ export const store = new Vuex.Store({
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
           emailVerified: firebaseUser.user.emailVerified,
-          uid: firebaseUser.user.uid
+          uid: firebaseUser.user.uid,
+          profPhotoUrl: firebaseUser.user.photoURL
         })
         commit('setLoading', false)
         router.push('/home')
@@ -53,7 +54,8 @@ export const store = new Vuex.Store({
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
           emailVerified: firebaseUser.user.emailVerified,
-          uid: firebaseUser.user.uid
+          uid: firebaseUser.user.uid,
+          profPhotoUrl: firebaseUser.user.photoURL
         })
         commit('setLoading', false)
         commit('setError', null)
@@ -69,7 +71,8 @@ export const store = new Vuex.Store({
         username: payload.displayName,
         email: payload.email,
         emailVerified: payload.emailVerified,
-        uid: payload.uid
+        uid: payload.uid,
+        profPhotoUrl: payload.photoURL
       })
     },
     userSignOut ({commit}) {
@@ -89,13 +92,15 @@ export const store = new Vuex.Store({
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
           emailVerified: firebaseUser.user.emailVerified,
-          uid: firebaseUser.user.uid
+          uid: firebaseUser.user.uid,
+          profPhotoUrl: firebaseUser.user.photoURL
         })
         commit('setLoading', false)
         commit('setError', null)
         router.push('/home')
       }).catch(error => {
         commit('setError', error.message)
+        console.log("Error signing in:", error)
       })
     }
   },
@@ -117,8 +122,8 @@ var createUserDoc = function (firebaseUserObject) {
         firstName: "",
         lastName: "",
         email: firebaseUserObject.user.email,
-        likedProgressPics: [],
-        likedMeals: [],
+        profPhotoUrl: firebaseUserObject.user.photoURL,
+        created: firebase.firestore.FieldValue.serverTimestamp()
       })
     }
   })
