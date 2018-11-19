@@ -46,6 +46,7 @@ export default {
         created: firebase.firestore.FieldValue.serverTimestamp(),
         calories: this.calories,
         user: this.$store.state.user,
+        comments: [],
         fileLocation: ''
       })
       .then(docRef => {
