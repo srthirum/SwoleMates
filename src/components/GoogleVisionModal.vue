@@ -10,7 +10,7 @@
       slot='activator'
       color="green lighten-2"
       dark
-      @click.native='getInfo'
+      @click.native='userSelection'
       >
       Get some nutrition info shit boi
       </v-btn>
@@ -21,24 +21,25 @@
             class="headline grey lighten-2"
             primary-title
           >
-            Getting nutition Info mofo
+            Identifying food bitch
             <v-progress-linear :indeterminate="true"></v-progress-linear>
           </v-card-title>
         </div>
         <div v-else>
-        <v-card-title
-          class="headline grey lighten-2"
-          primary-title
-        >
-          Is this your meal?
+        <v-card-title>
+          <v-list>
+            <v-list-tile
+              v-for="item in labels"
+              :key="item"
+              @click="getNutritionInfo(item)"
+            >
+              <v-list-tile-content>
+                <v-list-tile-title v-text="item"></v-list-tile-title>
+              </v-list-tile-content>
+
+            </v-list-tile>
+          </v-list>
         </v-card-title>
-
-        <v-card-text>
-          Nutrition info shit goes here <br/>
-          The labels queried to nutritionX is: {{query}}<br/> <br/> <br/>
-
-          The response is: <br/> <br/>{{message}}
-        </v-card-text>
 
         <v-divider></v-divider>
 
@@ -55,84 +56,51 @@
       </div>
       </v-card>
     </v-dialog>
+    <nutrition-x ref='nutrition'></nutrition-x>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-// data for vision and nutrition tweaking to improve results
-// how many of the top vision results to send to nutritionX
-var _numberOfResultsToSend = 3
-// how to send the data (either AND OR *(wildcard) " "(space))
-var _glue = " "
-// which fields to return from nutritionX
-var _fields = [
-  "item_name",
-  "brand_name",
-  "nf_calories",
-  "nf_sodium",
-  "nf_serving_weight_grams",
-  "item_type"
-]
-// minimal matching score from nutritionX
-var _minScore = 0.5
-// sources to ignore for data 1 = Restaurant, 2 = Grocery, 3 = Common food
-var _sources = {
-  "item_type": 1
-}
-// calorie range for returned food
-var _calorieRange = {
-  "from": 0,
-  "to": 5000
-}
-
+import NutritionX from './NutritionX.vue'
 export default {
+
+  components: {
+    NutritionX
+  },
+
   props: ['pictureUrl'],
+
   data () {
     return{
       inProgress: false,
       dialog: false,
-      query: {}, // labels from google vision
+      labels: {}, // labels from google vision
+      query: "", // label sent to nutritionX
       message: {} // nutrition information
       }
     },
-  methods: {
 
-    // wrapper function for vision and nutritionX
-    // also takes care of html loading bar and shit
-    getInfo: function () {
-      // set loading bar on
+  methods: {
+    // do nutrition info getter and close dialog box
+    getNutritionInfo: function(food){
+      this.dialog = false
+      this.$refs.nutrition.init(food)
+      console.log('shit is')
+      console.log(food)
+    },
+
+    userSelection: function () {
       this.inProgress = true
       this.getLabels(this.pictureUrl)
         .then(response => {
           console.log("the response is: "+response)
-          // set query data and get top 3 results
-          var query = response.slice(0,_numberOfResultsToSend).join(_glue)
-          this.query = query
-          // console.log("query is: "+this.query)
-          // gotten labels, now pass to nutritionx api to get info
-          this.getNutritionInfo(query)
-          .then(data => {
-             console.log("the shit returned by get that info is: "+JSON.stringify(data))
-            // update modal information
-            console.log("the shit to extract is " + JSON.stringify(data.hits[0]))
-            this.message = this.extractFields(data.hits[0].fields)
-            //done processing get rid of progress bar
-            this.inProgress = false
-          })
+          this.labels = response // set global labels varriable
+          this.inProgress = false
         })
         .catch(error => {
           console.error("there was a fuckup getting nutrition info: " + error)
         })
-    },
-
-    // format json fields to correct dictionary
-    extractFields: function(labels) {
-      return {
-        "calories": labels.nf_calories,
-        "name": labels.item_name,
-        "serving_size (grams)": labels.nf_serving_weight_grams
-      }
     },
 
     // get labels from google vision api
@@ -187,49 +155,7 @@ export default {
       .catch(function (error) {
         console.error("error getting labels :" + error)
       })
-    },
-
-    // nutritionx nutrion info getter
-    getNutritionInfo: function(labels) {
-      // console.log("the labels are: "+ labels)
-      // parameters to pass into nutritionX
-      var parameters =   {
-          // input data to api
-            "appId": "61d8ed61",
-            "appKey": "e4a75788c608ec7da58220c3e25540dc",
-            // the fields we want the api to return
-            "fields": _fields,
-            // sorting criteria
-            "sort": {
-              "field": "nf_calories",
-              "order": "desc"
-            },
-            // only return items with at least 50% match
-            "min_score": _minScore,
-            // query about the vision returned food labels
-            "query": labels,
-            // no restaurant (1) or grocery food (2) data
-            "filters": {
-              "not": _sources,
-              // only return results with calories within this range
-              "nf_calories": _calorieRange
-            }
-        }
-        // must return a promise
-        // since the calling function is awaiting labels, only return on a promise fullfillment
-        return axios.post(
-        // endpoint = nutrionx search api, parameters = defined above
-        'https://api.nutritionix.com/v1_1/search', parameters
-      )
-      .then(response => {
-        // console.log("got the shit: " + JSON.stringify(response.data))
-        return response.data
-      })
-      .catch(error => {
-      console.error("there was an error getting nutrition information:" + error)
-      })
     }
   }
 }
-
 </script>
