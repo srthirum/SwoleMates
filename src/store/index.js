@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import router from '@/router'
+import { fsdb } from '../main.js'
 
 Vue.use(Vuex)
 
@@ -29,11 +30,13 @@ export const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
+        createUserDoc(firebaseUser)
         commit('setUser', {
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
           emailVerified: firebaseUser.user.emailVerified,
-          uid: firebaseUser.user.uid
+          uid: firebaseUser.user.uid,
+          profPhotoUrl: firebaseUser.user.photoURL
         })
         commit('setLoading', false)
         router.push('/home')
@@ -47,11 +50,13 @@ export const store = new Vuex.Store({
       commit('setLoading', true)
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
       .then(firebaseUser => {
+        createUserDoc(firebaseUser)
         commit('setUser', {
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
           emailVerified: firebaseUser.user.emailVerified,
-          uid: firebaseUser.user.uid
+          uid: firebaseUser.user.uid,
+          profPhotoUrl: firebaseUser.user.photoURL
         })
         commit('setLoading', false)
         commit('setError', null)
@@ -67,40 +72,36 @@ export const store = new Vuex.Store({
         username: payload.displayName,
         email: payload.email,
         emailVerified: payload.emailVerified,
-        uid: payload.uid
+        uid: payload.uid,
+        profPhotoUrl: payload.photoURL
       })
-      router.push('/home')
     },
     userSignOut ({commit}) {
       firebase.auth().signOut()
-      commit('setUser', null)
-      router.push('/')
+      .then(() => {
+        commit('setUser', null)
+        router.push('/')        
+      })
     },
     googleAuth ({commit}) {
       commit('setLoading', true)
       var provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(provider)
       .then(firebaseUser => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        // var token = firebaseUser.credential.accessToken
+        createUserDoc(firebaseUser)
         commit('setUser', {
           username: firebaseUser.user.displayName,
           email: firebaseUser.user.email,
           emailVerified: firebaseUser.user.emailVerified,
-          uid: firebaseUser.user.uid
+          uid: firebaseUser.user.uid,
+          profPhotoUrl: firebaseUser.user.photoURL
         })
         commit('setLoading', false)
         commit('setError', null)
         router.push('/home')
       }).catch(error => {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
+        commit('setError', error.message)
+        console.log("Error signing in:", error)
       })
     }
   },
@@ -110,3 +111,25 @@ export const store = new Vuex.Store({
     }
   }
 })
+
+// create user document if first time logging in
+var createUserDoc = function (firebaseUserObject) {
+  var userDocumentRef = fsdb.collection('users').doc(firebaseUserObject.user.uid)
+  userDocumentRef.get()
+  .then(doc => {
+    if (doc.exists === false) {
+      userDocumentRef.set({
+        username: firebaseUserObject.user.displayName,
+        firstName: "",
+        lastName: "",
+        email: firebaseUserObject.user.email,
+        profPhotoUrl: firebaseUserObject.user.photoURL,
+        created: firebase.firestore.FieldValue.serverTimestamp()
+      })
+    }
+  })
+  .catch(error => {
+    commit('setError', error.message)
+    console.log("Error getting document:", error)
+  })
+}

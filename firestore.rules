@@ -16,5 +16,13 @@ service cloud.firestore {
       allow update, delete: if request.auth.uid == resource.data.user.uid;
       allow read, create: if request.auth.uid != null; 
     }
+    
+    // User info
+    //   - Authenticated users can create
+    //   - Only the owner of an item can update, and delete
+    match /users/{user} {
+      allow update, delete: if request.auth.uid == resource.data.user.uid;
+      allow read, create: if request.auth.uid != null; 
+    }
   }
 }
