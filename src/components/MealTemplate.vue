@@ -11,7 +11,7 @@
 
                     <div class="avatar" style="" align="left">
                       <v-avatar slot="activator" size="36px">
-                        <img src="https://t3.ftcdn.net/jpg/00/64/67/52/240_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg">
+                        <img :src="item.user.profPhotoUrl">
                       </v-avatar> &nbsp; {{item.user.username}}
                     </div>
 
@@ -26,10 +26,7 @@
                     </v-img>
                 
                     <v-card-actions align="right">
-                      <v-btn v-show="isLiked" flat color="red" @click="isLiked = !isLiked; likeItem()" icon>
-                        <v-icon>favorite</v-icon>{{item.likes}}
-                      </v-btn>
-                      <v-btn v-show="!isLiked" @click="isLiked = !isLiked; likeItem()" icon>
+                      <v-btn icon>
                         <v-icon>favorite</v-icon>{{item.likes}}
                       </v-btn>
                       <v-btn icon>
@@ -45,6 +42,22 @@
                       </v-spacer>
                   </v-flex>
                 </v-layout>
+                
+                <v-form>
+                  <v-text-field
+                    v-model.trim="newComment"
+                    label="Comment..."
+                    required
+                  ></v-text-field>
+                  <v-btn @click="postComment">
+                    Post Comment
+                  </v-btn>
+                </v-form>
+                <h4>Comments</h4>
+                <div v-for="comment in item.comments">
+                  <h5>{{ comment.user.email }}:</h5> 
+                  <p>{{ comment.commentText }} </p>
+                </div>
 
               </v-container>
             </v-card>
@@ -59,21 +72,25 @@
 <script>
 import { fsdb, storage } from '../main.js'
 import { timeAgoDate } from '../util/time.js'
+import firebase from 'firebase/app'
 
 export default {
   name: 'mealTemplate',
   props: ['item'],
   data () {
     return {
-      imageUrl: '',
-      isLiked: false
+      newComment: "",
+      imageUrl: ""
     }
   },
   mounted: function () {
     this.getImageUrl()
   },
-  firestore: {
-    mealItems: fsdb.collection('meals')
+  firestore () {
+    return {
+      mealItems: fsdb.collection('meals')
+    }
+    
   },
   computed: {
     photoDate: function () {
@@ -121,6 +138,21 @@ export default {
           })
         }
       }
+    }, 
+    postComment: function () {
+      var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
+      
+      reference.update({
+        comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
+        user: this.$store.state.user })
+       })
+      .then(() => {
+        this.newComment = "";
+      })
+      .catch(error => {
+        var errorMsg = 'Error creating comment'
+        console.error(errorMsg, error)
+      })
     }
   }
 }

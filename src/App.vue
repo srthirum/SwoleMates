@@ -1,6 +1,19 @@
 <template>
   <v-app>
     <v-navigation-drawer v-model="sidebar" app>
+      <v-toolbar flat class="transparent" v-if="isAuthenticated">
+        <v-list>
+          <v-list-tile avatar :to="/user/ + this.$store.state.user.uid">
+            <v-list-tile-avatar>
+              <img src="https://randomuser.me/api/portraits/men/85.jpg">
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ this.$store.state.user.username }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </v-toolbar>
+
       <v-list>
         <v-list-tile
           v-for="item in menuItems"
@@ -40,10 +53,34 @@
           <v-icon left dark>{{ item.icon }}</v-icon>
           {{ item.title }}
         </v-btn>
-        <v-btn flat @click="userSignOut" v-if="isAuthenticated">
-          <v-icon left>exit_to_app</v-icon>
-          Sign Out
-        </v-btn>
+
+        <v-menu bottom="bottom" left="left" offset-y="offset-y" attach="attach" v-if="isAuthenticated">
+          <v-btn slot="activator" flat="flat">
+            <v-icon left>person</v-icon>
+            <span class="mr-1"> {{ this.$store.state.user.username }} </span>
+            <v-icon>arrow_drop_down</v-icon>
+          </v-btn>
+          <v-list light="light">
+
+            <v-list-tile :to="/user/ + this.$store.state.user.uid">
+              <v-list-tile-avatar>
+                <v-icon>account_box</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>Profile</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-list-tile @click="userSignOut">
+              <v-list-tile-avatar>
+                <v-icon>exit_to_app</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>Sign Out</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
       </v-toolbar-items>
     </v-toolbar>
     

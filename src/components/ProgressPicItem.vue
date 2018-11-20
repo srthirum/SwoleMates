@@ -12,8 +12,13 @@
 
                       <div id="avatar" style="display:inline-block; float:left; padding-bottom:5px;" align="left">
                         <v-avatar slot="activator" size="36px">
+
                           <img src="https://t3.ftcdn.net/jpg/00/64/67/52/240_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg">
                         </v-avatar> &nbsp; {{item.user.username}}
+
+                          <img :src="item.user.profPhotoUrl">
+                        </v-avatar> {{item.user.username}}
+
                       </div>
 
                       <div id="timestamp" style="display:inline-block; float:right; padding-top:8px; padding-bottom:10px; color: #a0a6b2; font-size:12px;" :title="dateString">
@@ -43,6 +48,33 @@
                         <v-spacer align="left">
                           &nbsp; &nbsp; &nbsp; {{item.description}}
                         </v-spacer>
+                          </v-btn>
+                          <v-btn v-show="!isLiked" @click="isLiked = !isLiked; likeItem()" icon>
+                            <v-icon>favorite</v-icon>{{item.likes}}
+                          </v-btn>
+                          <v-btn icon>
+                            <v-icon>send</v-icon>
+                          </v-btn>
+                          <v-btn style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
+                      </v-card-actions>
+
+                        <v-spacer align="left">
+                          &nbsp; &nbsp; &nbsp; {{item.description}}
+                        </v-spacer>
+                      <v-form>
+                        <v-text-field
+                          v-model.trim="newComment"
+                          label="Comment..."
+                          required
+                        ></v-text-field>
+                        <v-btn @click="postComment">
+                          Post Comment
+                        </v-btn>
+                      </v-form>
+                      <h4>Comments</h4>
+                      <div v-for="comment in item.comments">
+                       <h5>{{ comment.user.email }}:</h5> <p>{{ comment.commentText }} </p>
+                        </div>
                     </v-flex>
                 </v-layout>
 
@@ -59,6 +91,7 @@
 
 import { fsdb, storage } from '../main.js'
 import { timeAgoDate } from '../util/time.js'
+import firebase from 'firebase/app'
 
 export default {
   name: 'progress-pic-item',
@@ -67,6 +100,7 @@ export default {
     return {
       imageUrl: '',
       isLiked: false
+      newComment: ''
     }
   },
   mounted: function () {
@@ -86,7 +120,6 @@ export default {
         return new Date(this.item.created.seconds * 1000).toString()
       }
     },
-
     isOwner: function() {
       //compare user owner === auth user
       if(this.item.user.uid === this.$store.state.user.uid)
@@ -94,6 +127,8 @@ export default {
       else 
         return false
     },
+      return (this.item.user.uid === this.$store.state.user.uid) ? true : false
+    }
   },
   watch: {
     item: function (newData, oldData) {
@@ -123,6 +158,11 @@ export default {
       this.$firestoreRefs.progressPicItems.doc(this.item.id).collection('likedBy').add({
           liker: '',
         })
+      if(this.isLiked == true)
+        this.item.likes++
+      else
+        this.item.likes--
+      this.$firestoreRefs.progressPicItems.doc(this.item.id).update({likes: this.item.likes})
     },
 
     getImageUrl: function () {
@@ -138,6 +178,19 @@ export default {
           })
         }
       }
+    }, postComment: function () {
+      console.log("PostComment: " + this.newComment);
+      var reference = this.$firestoreRefs.progressPicItems.doc(this.item.id);
+      
+      reference.update({
+        comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
+        user: this.$store.state.user })
+       })
+      .catch(error => {
+        var errorMsg = 'Error creating comment'
+        console.error(errorMsg, error)
+      })
+      this.newComment = "";
     }
   }
 }
