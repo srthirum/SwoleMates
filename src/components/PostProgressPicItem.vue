@@ -28,53 +28,13 @@ export default {
       progressPicItems: [],
       photoDescription: '',
       likes: 0,
+      isLiked: false,
       file: null
     }
   },
+
   firestore: {
     progressPicItems: fsdb.collection('progress-post'),
-  },
-
-    computed: {
-    photoDate: function () {
-      if (this.item.created) {
-        return timeAgoDate(this.item.created.seconds * 1000)
-      }
-    },
-    dateString: function () {
-      if (this.item.created) {
-        return new Date(this.item.created.seconds * 1000).toString()
-      }
-    },
-
-    isOwner: function() {
-      //compare user owner === auth user
-      if(this.item.user.uid === this.$store.state.user.uid)
-        return true 
-      else 
-        return false
-    },
-  },
-
-    computed: {
-    photoDate: function () {
-      if (this.item.created) {
-        return timeAgoDate(this.item.created.seconds * 1000)
-      }
-    },
-    dateString: function () {
-      if (this.item.created) {
-        return new Date(this.item.created.seconds * 1000).toString()
-      }
-    },
-
-    isOwner: function() {
-      //compare user owner === auth user
-      if(this.item.user.uid === this.$store.state.user.uid)
-        return true 
-      else 
-        return false
-    },
   },
 
   methods: {
@@ -85,7 +45,8 @@ export default {
         created: firebase.firestore.FieldValue.serverTimestamp(),
         user: this.$store.state.user,
         fileLocation: '',
-        likes: this.likes
+        likes: this.likes,
+        isLiked: this.isLiked,
       })
       .then(docRef => {
         this.photoDescription = ''
