@@ -17,7 +17,8 @@
           </v-card-title>
         </div>
         <div v-else>
-          eat my wang
+          eat my wang this is ur nutrition info fucker
+          {{nutrition}}
         <v-divider></v-divider>
 
         <v-card-actions>
@@ -67,18 +68,19 @@ export default {
     return{
       inProgress: false, // progress bar
       dialog: false, // modal
-      nutrion: {} // the returned nutrition info
+      nutrition: {} // the returned nutrition info
       }
     },
-
-  methods: {
-    init: function(food) {
+    
+  mounted: function() {
       console.log('penis')
       console.log(food)
       this.inProgress = true
       this.query = food
-      this.getInfo()
-    },
+      this.getInfo()  
+  }
+
+  methods: {
     // wrapper function for vision and nutritionX
     // also takes care of html loading bar and shit
     getInfo: function () {
@@ -89,7 +91,8 @@ export default {
          console.log("the shit returned by get that info is: "+JSON.stringify(data))
         // update modal information
         console.log("the shit to extract is " + JSON.stringify(data.hits[0]))
-        this.message    = this.extractFields(data.hits[0].fields)
+        this.nutrition    = this.extractFields(data.hits[0].fields)
+        store.commit('nutrition', this.nutrition)
         //done processing get rid of progress bar
         this.inProgress = false
       })
