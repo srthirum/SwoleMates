@@ -92,7 +92,7 @@ export default {
         // update modal information
         console.log("the shit to extract is " + JSON.stringify(data.hits[0]))
         this.nutrition    = this.extractFields(data.hits[0].fields)
-        store.commit('nutrition', this.nutrition)
+        this.$store.commit('nutrition', this.nutrition)
         //done processing get rid of progress bar
         this.inProgress = false
       })
