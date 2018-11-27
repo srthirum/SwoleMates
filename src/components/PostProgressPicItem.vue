@@ -1,34 +1,40 @@
 <template>
-  <v-app id="dialog_box">
+  <v-app id="dialog_box" style="height: 70px;">
     <v-layout row justify-center>
-      <v-btn icon color="primary" dark @click="dialog=true"
-      >
-        <v-icon>
-          add_box
-        </v-icon>
+      <v-btn color="orange" class="white--text" @click="dialog=true">
+        <v-icon color="white" medium>
+          cloud_upload
+        </v-icon>&nbsp; Upload a photo
       </v-btn>
       <v-dialog
         v-model="dialog"
-        max-width="290"
+        max-width="500px"
       >
         <v-card>
           <v-card-title class="headline">Upload Your Photo</v-card-title> 
-            <v-form>
-              <v-text-field 
-                v-model.trim="photoDescription" 
-                label="Description" 
-                required>
-              </v-text-field>
-            <input type="file" @change="onFileChange">
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn 
-                :disabled="!file" 
-                @click="postProgressItem">
-                Post
-              </v-btn>
-            </v-card-actions>
-            </v-form>
+            <v-form class="form-container">
+              <v-container fluid>
+                <v-flex xs12>
+                    <v-text-field 
+                      v-model.trim="photoDescription" 
+                      label="Description"
+                      required>
+                    </v-text-field>
+                  <input ref="imageInput" type="file" @change="onFileChange">
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                      <v-btn
+                        ref="postButton"
+                        color="white"
+                        background-color="blue" 
+                        :disabled="!file" 
+                        @click="postProgressItem">
+                        Post
+                      </v-btn>
+                  </v-card-actions>
+              </v-flex>
+            </v-container>
+          </v-form>
         </v-card>
       </v-dialog>
     </v-layout>
@@ -48,6 +54,20 @@ export default {
       photoDescription: '',
       file: null,
       dialog: false,
+    }
+  },
+  // mounted(){
+  //   $(this.$refs.dialog).('hidden.bs.modal', () => {
+  //     this.image = ''
+  //     this.$refs.imageInput.value = null
+  //   })
+  // },
+  watch: {
+    dialog (val){
+      if (!val){
+        this.$refs.imageInput.value = ''
+        this.$refs.postButton.disabled = true
+      }
     }
   },
   firestore: {
