@@ -11,7 +11,8 @@ export const store = new Vuex.Store({
     appTitle: 'SwoleMates',
     user: null,
     error: null,
-    loading: false
+    loading: false,
+    nutrition: {}
   },
   mutations: {
     setUser (state, payload) {
@@ -22,6 +23,10 @@ export const store = new Vuex.Store({
     },
     setLoading (state, payload) {
       state.loading = payload
+    },
+    // set the overall nutrition 
+    nutrition (state, payload){
+      state.nutrition = payload
     }
   },
   actions: {
