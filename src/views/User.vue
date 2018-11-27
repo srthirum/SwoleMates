@@ -4,7 +4,14 @@
       <v-flex xs12 class="text-xs-center" mt-5>
         <h1 v-if="user">{{ user.username }}</h1>
         <h1 v-else>User not found</h1>
-        
+        <v-spacer>
+          <v-btn v-if="this.$store.state.user.uid!=user.uid && isFriend==false" @click="addFriend">
+            Add Friend
+          </v-btn>
+          <v-btn v-if="isFriend" @click="deleteFriend">
+            Delete Friend
+          </v-btn>
+        </v-spacer>
       </v-flex>
 
       <v-flex xs12 class="text-xs-center" mt-3 v-if="user">
@@ -66,18 +73,23 @@ export default {
     return {
       user: {},
       userProgPics: [],
-      userMeals: []
+      userMeals: [],
+      isFriend: undefined
     }
   },
   watch: {
     '$route' (to, from) {
       console.log(this.$route.params.uid)
+    },
+    user: function (newData, oldData) {
+      this.checkIsFriend()
     }
   },
   mounted: function () {
     this.getUser()
     this.getUserProgPics()
     this.getUserMeals()
+    this.checkIsFriend()
   },
   methods: {
     getUser: function () {
@@ -88,6 +100,7 @@ export default {
           this.user = null
         } else {
           this.user = doc.data()
+          this.user.uid = doc.id
         }
       })
       .catch(error => {
@@ -119,6 +132,41 @@ export default {
       .catch(error => {
         this.$store.commit('setError', error.message)
         console.log("Error getting document:", error)
+      })
+    },
+    addFriend: function () {
+      fsdb.collection('users').doc(this.$store.state.user.uid).collection('friends').doc(this.user.uid).set({
+        uid: this.user.uid
+      })
+      .then(() => {
+        this.isFriend = true
+      })
+      .catch(error => {
+        var errorMsg = 'Error adding friend'
+        console.error(errorMsg, error)
+        this.$store.commit('setError', error.message)
+      })
+    },
+    deleteFriend: function () {
+      fsdb.collection('users').doc(this.$store.state.user.uid).collection('friends').doc(this.user.uid).delete()
+      .then(() => {
+        this.isFriend = false
+      })
+      .catch(error => {
+        var errorMsg = 'Error deleting friend'
+        console.error(errorMsg, error)
+        this.$store.commit('setError', error.message)
+      })
+    },
+    checkIsFriend () {
+      if (this.user.uid == undefined) return // break out if user not defined
+      fsdb.collection('users').doc(this.$store.state.user.uid).collection('friends').doc(this.user.uid).get()
+      .then(doc => {
+        this.isFriend = (doc.exists) ? true : false
+      })
+      .catch(error => {
+        console.log("Error determining if is friend:", error)
+        this.$store.commit('setError', error.message)
       })
     }
   }
