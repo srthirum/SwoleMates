@@ -40,6 +40,9 @@
                       <v-spacer align="left">
                         &nbsp; &nbsp; &nbsp; Calories: {{item.calories}}
                       </v-spacer>
+                      <v-spacer align="left" v-for="fact in item.nutrition">
+                        fact: {{ fact }}
+                      </v-spacer>
                   </v-flex>
                 </v-layout>
                 
@@ -176,7 +179,7 @@ export default {
     updatePost: function () {
       var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
       reference.update({
-        [this.updatedField]: this.updatedValue
+        ['nutrition.'+this.updatedField]: this.updatedValue
       }).then(() => {
         this.updatedField = ""
         this.updatedValue = ""
