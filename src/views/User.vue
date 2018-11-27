@@ -91,20 +91,22 @@ export default {
         }
       })
       .catch(error => {
-        commit('setError', error.message)
+        this.$store.commit('setError', error.message)
         console.log("Error getting document:", error)
       })
     },
     getUserProgPics: function () {
-      fsdb.collection('progress-post').where("user.uid", "==", this.$route.params.uid).get()
+      fsdb.collection('progress-post').where('user.uid', '==', this.$route.params.uid).orderBy('created', 'desc').get()
       .then(snapshot => {
         snapshot.forEach(doc => {
-          this.userProgPics.push(doc.data())
+          var fullDocData = doc.data()
+          fullDocData.id = doc.id
+          this.userProgPics.push(fullDocData)
         })
       })
       .catch(error => {
-        commit('setError', error.message)
         console.log("Error getting document:", error)
+        this.$store.commit('setError', error.message)
       })
     },
     getUserMeals: function () {
@@ -115,7 +117,7 @@ export default {
         })
       })
       .catch(error => {
-        commit('setError', error.message)
+        this.$store.commit('setError', error.message)
         console.log("Error getting document:", error)
       })
     }
