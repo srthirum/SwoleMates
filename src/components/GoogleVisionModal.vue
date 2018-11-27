@@ -54,6 +54,9 @@
           </v-btn>
         </v-card-actions>
       </div>
+      <div v-if='showNutrition'>
+      <nutrition-x query='query'></nutrition-x>
+      </div>
       </v-card>
     </v-dialog>
     <nutrition-x ref='nutrition'></nutrition-x>
@@ -74,6 +77,7 @@ export default {
   data () {
     return{
       inProgress: false,
+      showNutrition: false,
       dialog: false,
       labels: {}, // labels from google vision
       query: "", // label sent to nutritionX
@@ -85,7 +89,8 @@ export default {
     // do nutrition info getter and close dialog box
     getNutritionInfo: function(food){
       this.dialog = false
-      this.$refs.nutrition.init(food)
+      this.showNutrition = true
+      this.query = food
       console.log('shit is')
       console.log(food)
     },
