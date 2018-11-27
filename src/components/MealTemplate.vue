@@ -59,6 +59,23 @@
                   <p>{{ comment.commentText }} </p>
                 </div>
 
+                <v-form v-if="isOwner">
+                  <v-text-field
+                  v-model.trim="updatedField"
+                  label="Update Post"
+                  required
+                  ></v-text-field>
+                  <v-text-field
+                  v-model.trim="updatedValue"
+                  label="Value"
+                  required
+                  ></v-text-field>
+                  <v-btn @click="updatePost">
+                    Update
+                  </v-btn>
+
+                </v-form>
+
               </v-container>
             </v-card>
           </v-flex>
@@ -80,7 +97,9 @@ export default {
   data () {
     return {
       newComment: "",
-      imageUrl: ""
+      imageUrl: "",
+      updatedField: "",
+      updatedValue: ""
     }
   },
   mounted: function () {
@@ -151,6 +170,19 @@ export default {
       })
       .catch(error => {
         var errorMsg = 'Error creating comment'
+        console.error(errorMsg, error)
+      })
+    },
+    updatePost: function () {
+      var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
+      reference.update({
+        [this.updatedField]: this.updatedValue
+      }).then(() => {
+        this.updatedField = ""
+        this.updatedValue = ""
+      })
+      .catch(error => {
+        var errorMsg = 'Error updating post'
         console.error(errorMsg, error)
       })
     }
