@@ -40,6 +40,9 @@
                       <v-spacer align="left">
                         &nbsp; &nbsp; &nbsp; Calories: {{item.calories}}
                       </v-spacer>
+                      <v-spacer align="left" v-for="fact in item.nutrition" :key="fact.key">
+                         &nbsp; &nbsp; &nbsp; {{ fact.attribute }}: {{ fact.val }}
+                      </v-spacer>
                   </v-flex>
                 </v-layout>
                 
@@ -58,6 +61,23 @@
                   <h5>{{ comment.user.email }}:</h5> 
                   <p>{{ comment.commentText }} </p>
                 </div>
+
+                <v-form v-if="isOwner">
+                  <v-text-field
+                  v-model.trim="updatedField"
+                  label="New Nutrition Fact"
+                  required
+                  ></v-text-field>
+                  <v-text-field
+                  v-model.trim="updatedValue"
+                  label="Value"
+                  required
+                  ></v-text-field>
+                  <v-btn @click="updatePost">
+                    Update
+                  </v-btn>
+
+                </v-form>
 
               </v-container>
             </v-card>
@@ -80,7 +100,9 @@ export default {
   data () {
     return {
       newComment: "",
-      imageUrl: ""
+      imageUrl: "",
+      updatedField: "",
+      updatedValue: ""
     }
   },
   mounted: function () {
@@ -151,6 +173,19 @@ export default {
       })
       .catch(error => {
         var errorMsg = 'Error creating comment'
+        console.error(errorMsg, error)
+      })
+    },
+    updatePost: function () {
+      var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
+      reference.update({
+        ['nutrition.'+this.updatedField]: { attribute: this.updatedField, val: this.updatedValue }
+      }).then(() => {
+        this.updatedField = ""
+        this.updatedValue = ""
+      })
+      .catch(error => {
+        var errorMsg = 'Error updating post'
         console.error(errorMsg, error)
       })
     }
