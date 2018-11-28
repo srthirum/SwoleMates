@@ -1,15 +1,16 @@
 <template>
   <v-app id="dialog_box" style="height: 70px;">
     <v-layout row justify-center>
-      <v-btn color="orange" class="white--text" @click="dialog=true">
-        <v-icon color="white" medium>
-          cloud_upload
-        </v-icon>&nbsp; Upload a photo
-      </v-btn>
       <v-dialog
         v-model="dialog"
+        persistent
         max-width="500px"
       >
+      <v-btn slot="activator" color="orange" class="white--text" @click="dialog=true">
+      <v-icon color="white" medium>
+        cloud_upload
+      </v-icon>&nbsp; Upload a photo
+      </v-btn>
         <v-card>
           <v-card-title class="headline">Upload Your Photo</v-card-title> 
             <v-form class="form-container">
@@ -17,21 +18,32 @@
                 <v-flex xs12>
                     <v-text-field 
                       v-model.trim="photoDescription" 
-                      label="Description"
+                      label="Description*"
                       required>
                     </v-text-field>
-                  <input ref="imageInput" type="file" @change="onFileChange">
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                      <v-btn
-                        ref="postButton"
-                        color="white"
-                        background-color="blue" 
-                        :disabled="!file" 
-                        @click="postProgressItem">
-                        Post
-                      </v-btn>
-                  </v-card-actions>
+
+                  <v-form  @submit.prevent="postProgressItem">
+                    <input ref="imageInput" type="file" @change="onFileChange">
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                          <v-btn 
+                            color="blue darken-1" 
+                            flat 
+                            @click="dialog=false">
+                          Close</v-btn>
+                          <v-btn
+                            ref="postButton"
+                            color="orange"
+                            class="white--text"
+                            type="submit"
+                            :disabled="!file" 
+                            @click="dialog=false"
+                            onClick="this.form.reset()">
+                            Post
+                          </v-btn>
+                      </v-card-actions>
+                  </v-form>
+                <small>*indicates required field</small>
               </v-flex>
             </v-container>
           </v-form>
@@ -56,12 +68,6 @@ export default {
       dialog: false,
     }
   },
-  // mounted(){
-  //   $(this.$refs.dialog).('hidden.bs.modal', () => {
-  //     this.image = ''
-  //     this.$refs.imageInput.value = null
-  //   })
-  // },
   watch: {
     dialog (val){
       if (!val){
