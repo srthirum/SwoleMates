@@ -65,7 +65,7 @@
                 <v-form v-if="isOwner">
                   <v-text-field
                   v-model.trim="updatedField"
-                  label="Update Post"
+                  label="New Nutrition Fact"
                   required
                   ></v-text-field>
                   <v-text-field
