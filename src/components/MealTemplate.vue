@@ -17,6 +17,9 @@
 
         <v-card-actions>
           <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
+          <v-flex>
+            <google-vision-modal :pictureUrl="imageUrl" @nutrition-recieved="updateFromNutrition"></google-vision-modal>
+          </v-flex>
         </v-card-actions>
       </v-card>
     </v-flex>
@@ -25,12 +28,17 @@
 
 <script>
 import { fsdb, storage } from '../main.js'
+import GoogleVisionModal from './GoogleVisionModal.vue'
 
 export default {
   name: 'mealTemplate',
   props: ['item'],
+  components: {
+    GoogleVisionModal
+  },
   data () {
     return {
+      testJSON: {"calories":4994.55,"name":"Pork, fresh, leg (ham), rump half, separable lean only, cooked, roasted - 1 roast","serving_size (grams)":3027},
       imageUrl: 'https://bluewater.co.uk/sites/bluewater/files/styles/image_spotlight_large/public/images/spotlights/burger-cropped.jpg?itok=SeFYMFP6'
     }
   },
@@ -76,6 +84,23 @@ export default {
           console.log(errorMsg, error)
         })
       }
+    },
+    updateFromNutrition: function (values) {
+      console.log('fuuccucucucuckkk '+values.calories)
+      this.updateAField('calories', values.calories)
+      this.updateAField('Serving Size (grams)', values['serving_size (grams)'])
+
+    },
+
+    updateAField: function (field, newVal) {
+      var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
+      reference.update({
+        ['nutrition.'+ field]: { attribute: field, val: newVal }
+      })
+      .catch(error => {
+        var errorMsg = 'Error updating post'
+        console.error(errorMsg, error)
+      })
     }
   }
 }

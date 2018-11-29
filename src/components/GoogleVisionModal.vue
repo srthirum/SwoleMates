@@ -60,7 +60,7 @@
       </div>
       </v-card>
     </v-dialog>
-    <nutrition-x :query="query" @nutrition-recieved="logit"></nutrition-x>
+    <nutrition-x :query="query" @nutrition-recieved="passit"></nutrition-x>
   </div>
 </template>
 
@@ -87,7 +87,8 @@ export default {
     },
 
   methods: {
-    logit: function (value){
+    passit: function (value){
+      this.$emit('nutrition-recieved', value)
       console.log("that shit returend by nutriont is: " + value.calories)
     },
     // do nutrition info getter and close dialog box
