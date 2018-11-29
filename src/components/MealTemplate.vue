@@ -32,6 +32,11 @@
                         <v-icon>send</v-icon>
                       </v-btn>
                       <v-btn style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
+                      <google-vision-modal
+                        v-if="isOwner"
+                        :pictureUrl="imageUrl"
+                        @nutrition-recieved="updateFromNutrition">
+                      </google-vision-modal>
                     </v-card-actions>
                       <v-spacer align="left">
                         &nbsp; &nbsp; &nbsp; {{item.food}}
@@ -42,14 +47,6 @@
                       <v-spacer align="left" v-for="fact in item.nutrition" :key="fact.key">
                          &nbsp; &nbsp; &nbsp; {{ fact.attribute }}: {{ fact.val }}
                       </v-spacer>
-                  </v-flex>
-                  <v-flex>
-                    <v-card-actions>
-                      <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
-                      <v-flex>
-                        <google-vision-modal :pictureUrl="imageUrl" @nutrition-recieved="updateFromNutrition"></google-vision-modal>
-                      </v-flex>
-                    </v-card-actions>
                   </v-flex>
                 </v-layout>
                 <updateMeal v-if="isOwner" :item="this.item">
