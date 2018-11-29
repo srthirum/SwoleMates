@@ -5,6 +5,10 @@
       label="Description"
       required
     ></v-text-field>
+    <v-checkbox
+      label="Private"
+      v-model="isPrivate"
+    ></v-checkbox>
     <input type="file" @change="onFileChange">
     <v-btn :disabled="!file" @click="postProgressItem">
       Post
@@ -23,7 +27,8 @@ export default {
     return {
       progressPicItems: [],
       photoDescription: '',
-      file: null
+      file: null,
+      isPrivate: false
     }
   },
   firestore: {
@@ -36,7 +41,8 @@ export default {
         description: this.photoDescription,
         created: firebase.firestore.FieldValue.serverTimestamp(),
         user: this.$store.state.user,
-        fileLocation: ''
+        fileLocation: '',
+        isPrivate: this.isPrivate
       })
       .then(docRef => {
         this.photoDescription = ''
