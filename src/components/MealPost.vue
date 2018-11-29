@@ -1,23 +1,29 @@
 <template>
-  <v-form>
-    <v-text-field
-      v-model.trim="photoDescription"
-      label="Meal"
-      required
-    ></v-text-field>
-    <v-text-field
-      v-model.trim="calories"
-      label="Calories"
-      type="number"
-      required
-    ></v-text-field>
-    <v-form @submit.prevent="postMealPhoto">
-      <input type="file" @change="onFileChange">
-      <v-btn type="submit" :disabled="!file" onClick="this.form.reset()">
-        Post
-      </v-btn>
+  <v-flex xs12 sm10 offset-sm2>
+    <v-card dark color="blue-grey darken-1">
+      <v-card-text>
+        <v-form>
+          <v-text-field
+          v-model.trim="photoDescription"
+          label="Meal"
+          required
+          ></v-text-field>
+          <v-text-field
+          v-model.trim="calories"
+          label="Calories"
+          type="number"
+          required
+          ></v-text-field>
+          <v-form @submit.prevent="postMealPhoto">
+            <input type="file" @change="onFileChange">
+        <v-btn type="submit" :disabled="!file" onClick="this.form.reset()">
+          Post
+        </v-btn>
+      </v-form>
     </v-form>
-  </v-form>
+  </v-card-text>
+  </v-card>
+  </v-flex>
 </template>
 
 <script>
