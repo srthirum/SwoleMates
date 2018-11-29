@@ -1,15 +1,26 @@
 <template>
-  <v-form>
-    <v-text-field
-      v-model.trim="photoDescription"
-      label="Description"
-      required
-    ></v-text-field>
-    <input type="file" @change="onFileChange">
-    <v-btn :disabled="!file" @click="postProgressItem">
-      Post
-    </v-btn>
-  </v-form>
+  <v-flex xs12 sm10 offset-sm2>
+    <v-card dark color="blue-grey darken-1">
+      <v-card-text>
+        <v-form>
+          <v-text-field
+          v-model.trim="photoTitle"
+          label="Title"
+          required
+          ></v-text-field>
+          <v-text-field
+          v-model.trim="photoDescription"
+          label="Description"
+          required
+          ></v-text-field>
+          <input type="file" @change="onFileChange">
+          <v-btn :disabled="!file" @click="postProgressItem">
+            Post
+          </v-btn>
+        </v-form>
+      </v-card-text>
+    </v-card>
+  </v-flex>
 </template>
 
 <script>
@@ -23,6 +34,7 @@ export default {
     return {
       progressPicItems: [],
       photoDescription: '',
+      photoTitle: '',
       file: null
     }
   },
@@ -34,12 +46,14 @@ export default {
       // first create item in firestore database
       this.$firestoreRefs.progressPicItems.add({
         description: this.photoDescription,
+        title: this.photoTitle,
         created: firebase.firestore.FieldValue.serverTimestamp(),
         user: this.$store.state.user,
         fileLocation: ''
       })
       .then(docRef => {
         this.photoDescription = ''
+        this.photoTitle = ''
         // then upload the image file
         uploadFile(docRef.id)
       })

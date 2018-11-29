@@ -1,11 +1,11 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm6 offset-sm3>
+    <v-flex xs12 sm10 offset-sm2>
 
       <div id="progress-pic">
         <v-app id="v-progress-pic">
-          <v-flex> 
-            <v-card>
+          <v-flex>
+            <v-card color = "blue lighten-2">
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
                     <v-flex>
@@ -17,13 +17,16 @@
                       <div :title="dateString">
                         {{photoDate}}
                       </div>
+                      <v-spacer>
+                        {{item.title}}
+                      </v-spacer>
                       <v-img
                         :src="imageUrl"
                         height="400px">
                       </v-img>
 
                       <v-card-actions>
-                        <v-spacer> 
+                        <v-spacer>
                           posted by: {{item.user.email}}
                         </v-spacer>
                         <v-spacer>
@@ -139,7 +142,7 @@ export default {
     }, postComment: function () {
       console.log("PostComment: " + this.newComment);
       var reference = this.$firestoreRefs.progressPicItems.doc(this.item.id);
-      
+
       reference.update({
         comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
         user: this.$store.state.user })
