@@ -132,7 +132,7 @@ export default {
       }
     },
     updateFromNutrition: function (values) {
-      console.log('fuuccucucucuckkk '+values.calories)
+      // console.log('fuuccucucucuckkk '+values.calories)
       this.updateAField('calories', values.calories)
       this.updateAField('Serving Size (grams)', values['serving_size (grams)'])
 

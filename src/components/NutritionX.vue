@@ -26,19 +26,19 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            color="primary"
+            color="red"
             flat
             @click="dialog = false"
           >
-            I accept
+            Its Wrong!
           </v-btn>
 
           <v-btn
-            color="primary"
+            color="green"
             flat
-            @click="dialog = false"
+            @click="dialog = false, fullSend()"
           >
-            I accept
+            Thats Correct
           </v-btn>
         </v-card-actions>
       </div>
@@ -93,6 +93,12 @@ export default {
   },
 
   methods: {
+
+    fullSend: function (){
+      // console.log("home stretch")
+      this.$emit('nutrition-recieved', this.nutrition)
+    },
+
     // wrapper function for vision and nutritionX
     // also takes care of html loading bar and shit
     getInfo: function () {
@@ -104,7 +110,6 @@ export default {
         // update modal information
         // console.log("the shit to extract is " + JSON.stringify(data.hits[0]))
         this.nutrition    = this.extractFields(data.hits[0].fields)
-        this.$emit('nutrition-recieved', this.nutrition)
         //done processing get rid of progress bar
         this.inProgress = false
       })

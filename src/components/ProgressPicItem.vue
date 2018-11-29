@@ -45,9 +45,6 @@
                           <v-btn v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
                       </v-card-actions>
                       <v-flex> comments go here </v-flex>
-                      <v-flex>
-                        <google-vision-modal :pictureUrl="imageUrl"></google-vision-modal>
-                      </v-flex>
                     </v-flex>
                 </v-layout>
 
@@ -64,11 +61,7 @@
 
 import { fsdb, storage } from '../main.js'
 import { timeAgoDate } from '../util/time.js'
-import GoogleVisionModal from './GoogleVisionModal.vue'
 export default {
-  components: {
-    GoogleVisionModal
-  },
   name: 'progress-pic-item',
   props: ['item'],
   data () {
