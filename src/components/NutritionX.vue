@@ -74,11 +74,10 @@ export default {
     
   mounted: function() {
       console.log('penis')
-      console.log(food)
+      console.log(this.query)
       this.inProgress = true
-      this.query = food
       this.getInfo()  
-  }
+  },
 
   methods: {
     // wrapper function for vision and nutritionX
