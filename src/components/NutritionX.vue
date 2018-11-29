@@ -12,19 +12,27 @@
             class="headline grey lighten-2"
             primary-title
           >
-            Getting nutition Info mofo
+            Getting nutition Info
             <v-progress-linear :indeterminate="true"></v-progress-linear>
           </v-card-title>
         </div>
         <div v-else>
           <v-card-title>
-          eat my wang this is ur nutrition info fucker
+          Nutrition info for {{query}} is:
           {{nutrition}}
           </v-card-title>
         <v-divider></v-divider>
 
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            flat
+            @click="dialog = false"
+          >
+            I accept
+          </v-btn>
+
           <v-btn
             color="primary"
             flat
@@ -76,8 +84,9 @@ export default {
 
   watch: {
     query() {
-      console.log('penis theres a change on show')
-      console.log(this.query)
+      // console.log('penis theres a change on show')
+      // console.log(this.query)
+      this.dialog = true
       this.inProgress = true
       this.getInfo()
     }
@@ -91,9 +100,9 @@ export default {
       this.inProgress   = true
       this.getNutritionInfo(this.query)
       .then(data => {
-         console.log("the shit returned by get that info is: "+JSON.stringify(data))
+         // console.log("the shit returned by get that info is: "+JSON.stringify(data))
         // update modal information
-        console.log("the shit to extract is " + JSON.stringify(data.hits[0]))
+        // console.log("the shit to extract is " + JSON.stringify(data.hits[0]))
         this.nutrition    = this.extractFields(data.hits[0].fields)
         this.$emit('nutrition-recieved', this.nutrition)
         //done processing get rid of progress bar

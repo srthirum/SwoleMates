@@ -12,7 +12,7 @@
       dark
       @click.native='userSelection'
       >
-      Get some nutrition info shit boi
+      Retrieve Nutrition Information
       </v-btn>
 
       <v-card>
@@ -21,7 +21,7 @@
             class="headline grey lighten-2"
             primary-title
           >
-            Identifying food bitch
+            Identifying food
             <v-progress-linear :indeterminate="true"></v-progress-linear>
           </v-card-title>
         </div>
@@ -50,13 +50,9 @@
             flat
             @click="dialog = false"
           >
-            I accept
+            Cancel
           </v-btn>
         </v-card-actions>
-      </div>
-      <div>
-        in show nurition
-        {{query}}
       </div>
       </v-card>
     </v-dialog>
@@ -89,22 +85,22 @@ export default {
   methods: {
     passit: function (value){
       this.$emit('nutrition-recieved', value)
-      console.log("that shit returend by nutriont is: " + value.calories)
+      // console.log("that shit returend by nutriont is: " + value.calories)
     },
     // do nutrition info getter and close dialog box
     getNutritionInfo: function(food){
       this.dialog = false
       this.showNutrition = true
       this.query = food
-      console.log('shit is')
-      console.log(food)
+      // console.log('shit is')
+      // console.log(food)
     },
 
     userSelection: function () {
       this.inProgress = true
       this.getLabels(this.pictureUrl)
         .then(response => {
-          console.log("the response is: "+response)
+          // console.log("the response is: "+response)
           this.labels = response // set global labels varriable
           this.inProgress = false
         })
