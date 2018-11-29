@@ -8,17 +8,22 @@
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
                     <v-flex>
-
-                      <div id="avatar" style="display:inline-block; float:left; padding-bottom:5px;" align="left">
-                        <v-avatar slot="activator" size="36px">
-<!--                           <img src="https://t3.ftcdn.net/jpg/00/64/67/52/240_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg">
-                        </v-avatar> &nbsp; {{item.user.username}}
- -->
-                          <img :src="item.user.profPhotoUrl">
-                        </v-avatar> {{item.user.username}}
+                      <div id="timestamp" style="display:inline-block; float:right; padding-top:8px; padding-bottom:10px; color: #a0a6b2; font-size:12px;" :title="dateString">
                       </div>
 
-                      <div id="timestamp" style="display:inline-block; float:right; padding-top:8px; padding-bottom:10px; color: #a0a6b2; font-size:12px;" :title="dateString">
+                      <router-link :to="{ path: 'user'+'/'+item.user.uid }" style='text-decoration: none'>
+                        <div align="left">
+                          <v-avatar slot="activator" size="36px">
+                            <img :src="item.user.profPhotoUrl">
+                          </v-avatar> 
+                          <span style='margin-left: 0.5em'>
+                            {{ item.user.username }}
+                          </span>
+                        </div>
+                      </router-link>
+
+
+                      <div :title="dateString">
                         {{photoDate}}
                       </div>
                       <br><br>
@@ -31,30 +36,35 @@
                       </div>
 
                       <v-card-actions align="right">
-<!--                           <v-btn v-show="isLiked" flat color="red" @click="isLiked = !isLiked; likeItem()" icon>
+                          <v-btn v-show="isLiked" flat color="red" @click="isLiked = !isLiked; likeItem()" icon>
                             <v-icon>favorite</v-icon>{{item.likes}}
                           </v-btn>
                           <v-btn v-show="!isLiked" @click="isLiked = !isLiked; likeItem()" icon>
                             <v-icon>favorite</v-icon>{{item.likes}}
-                          </v-btn> -->
-
-                          <v-btn v-show="item.isLiked" flat color="red" @click="likeItem" icon>
+                          </v-btn>
+                          <v-btn icon>
+                            <v-icon>send</v-icon>
+                          </v-btn>
+                          <v-btn icon style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">
+                            <v-icon>delete</v-icon>
+                          </v-btn>
+                      </v-card-actions>
+<!--                         <v-spacer align="left">
+                          &nbsp; &nbsp; &nbsp; {{item.description}}
+                        </v-spacer>
+                          </v-btn>
+                          <v-btn v-show="!isLiked" @click="isLiked = !isLiked; likeItem()" icon>
                             <v-icon>favorite</v-icon>{{item.likes}}
                           </v-btn>
-                          <v-btn v-show="!item.isLiked" @click="likeItem" icon>
-                            <v-icon>favorite</v-icon>{{item.likes}}
-                          </v-btn>
-                        
                           <v-btn icon>
                             <v-icon>send</v-icon>
                           </v-btn>
                           <v-btn style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
-                      </v-card-actions>
+                      </v-card-actions> -->
 
-                      <v-spacer align="left">
-                        &nbsp; &nbsp; &nbsp; {{item.description}}
-                      </v-spacer>
-  
+                        <v-spacer align="left">
+                          &nbsp; &nbsp; &nbsp; {{item.description}}
+                        </v-spacer>
                       <v-form>
                         <v-text-field
                           v-model.trim="newComment"
@@ -93,17 +103,18 @@ export default {
   data () {
     return {
       imageUrl: '',
-      newComment: '',
+      isLiked: false,
+      likes: 0,
+      newComment: ''
     }
   },
   mounted: function () {
     this.getImageUrl()
   },
-
   firestore: {
-    progressPicItems: fsdb.collection('progress-post')
+    progressPicItems: fsdb.collection('progress-post'),
+    users: fsdb.collection('users')
   },
-
   computed: {
     photoDate: function () {
       if (this.item.created) {
@@ -117,27 +128,12 @@ export default {
     },
     isOwner: function() {
       return (this.item.user.uid === this.$store.state.user.uid) ? true : false
-    },
-
-    // initialLike: function () {
-    //   return this.item.isLiked
-    // }
-
-    // displayLikes: function(){
-    //   var size = 0
-    //   this.$firestoreRefs.progressPicItems.doc(this.item.id).collection('likedBy').get()
-    //     .then(querySnapshot => {
-    //       console.log(querySnapshot.size)
-    //       return querySnapshot.size
-    //     })
-    // },
+    }
   },
-
   watch: {
     item: function (newData, oldData) {
       this.getImageUrl()
-    },
-
+    }
   },
   methods: {
     deleteItem: function () {
@@ -152,34 +148,57 @@ export default {
         console.log(errorMsg, error)
       })
     },
-
     likeItem: function () {
+      var userRef = this.$firestoreRefs.users.doc(this.$store.state.user.uid)
       var itemRef = this.$firestoreRefs.progressPicItems.doc(this.item.id)
       var likersRef = this.$firestoreRefs.progressPicItems.doc(this.item.id).collection('likedBy')
-      likersRef.doc(this.$store.state.user.uid).get()
-        .then(liker => {
-          //if user liked the photo and is not in the collection
-          if(this.item.isLiked == false && !liker.exists){
+      var arrayRef = firebase.firestore.FieldValue
+      userRef.get()
+        .then(user => {
+          if(this.item.isLiked == false){
             this.item.likes++
-            likersRef.doc(this.$store.state.user.uid).set({
-              username: this.$store.state.user.username,
-              email: this.$store.state.user.email,
-              uid: this.$store.state.user.uid,
+            userRef.update({
+              "likedPhotos": arrayRef.arrayUnion(this.item.id) 
             })
-            this.item.isLiked = true
-          //if user unliked photo and is in collection 
+                // created: this.item.created,
+                // description: this.item.description,
+                // fileLocation: this.item.fileLocation,
+                // likes: this.item.likes})
+          this.item.isLiked = true
           }else{
             this.item.likes--
-            likersRef.doc(this.$store.state.user.uid).delete()
+            userRef.update({
+              "likedPhotos": arrayRef.arrayRemove(this.item.id) 
+            })
             this.item.isLiked = false
           }
-        itemRef.update({likes: this.item.likes})
-        itemRef.update({isLiked: this.item.isLiked})
+            itemRef.update({likes: this.item.likes})
+            itemRef.update({isLiked: this.item.isLiked})
         })
         .catch(error => {
-          var errorMsg = 'Error liking image file from database'
+          var errorMsg = 'Error liking image file in database'
           console.log(errorMsg, error)
         })
+      // likersRef.doc(this.$store.state.user.uid).get()
+      //   .then(liker => {
+      //     //if user liked the photo and is not in the collection
+      //     if(this.item.isLiked == false && !liker.exists){
+      //       this.item.likes++
+      //       likersRef.doc(this.$store.state.user.uid).set({
+      //         username: this.$store.state.user.username,
+      //         email: this.$store.state.user.email,
+      //         uid: this.$store.state.user.uid
+      //       })
+      //       this.item.isLiked = true
+      //     //if user unliked photo and is in collection 
+      //     }else{
+      //       this.item.likes--
+      //       likersRef.doc(this.$store.state.user.uid).delete()
+      //       this.item.isLiked = false
+      //     }
+      //   itemRef.update({likes: this.item.likes})
+      //   itemRef.update({isLiked: this.item.isLiked})
+      //   })
     },
 
     getImageUrl: function () {
@@ -195,13 +214,14 @@ export default {
           })
         }
       }
-    }, postComment: function () {
+    }, 
+    postComment: function () {
       console.log("PostComment: " + this.newComment);
       var reference = this.$firestoreRefs.progressPicItems.doc(this.item.id);
-      
       reference.update({
-        comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
-        user: this.$store.state.user })
+        comments: firebase.firestore.FieldValue.arrayUnion({ 
+          commentText: this.newComment,
+          user: this.$store.state.user })
        })
       .catch(error => {
         var errorMsg = 'Error creating comment'
