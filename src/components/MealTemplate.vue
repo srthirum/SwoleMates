@@ -1,9 +1,9 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm6 offset-sm3>
+    <v-flex xs12 sm8 offset-sm3>
       <div id="progress-pic">
         <v-app id="v-progress-pic">
-          <v-flex> 
+          <v-flex>
             <v-card>
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
@@ -24,7 +24,7 @@
                       :src="imageUrl"
                       height="400px">
                     </v-img>
-                
+
                     <v-card-actions align="right">
                       <v-btn icon>
                         <v-icon>favorite</v-icon>{{item.likes}}
@@ -47,7 +47,7 @@
                 </v-layout>
                 <updateMeal v-if="isOwner" :item="this.item">
                 </updateMeal>
-                
+
                 <v-form>
                   <v-text-field
                     v-model.trim="newComment"
@@ -60,7 +60,7 @@
                 </v-form>
                 <h4>Comments</h4>
                 <div v-for="comment in item.comments">
-                  <h5>{{ comment.user.email }}:</h5> 
+                  <h5>{{ comment.user.email }}:</h5>
                   <p>{{ comment.commentText }} </p>
                 </div>
               </v-container>
@@ -100,7 +100,7 @@ export default {
     return {
       mealItems: fsdb.collection('meals')
     }
-    
+
   },
   computed: {
     photoDate: function () {
@@ -148,10 +148,10 @@ export default {
           })
         }
       }
-    }, 
+    },
     postComment: function () {
       var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
-      
+
       reference.update({
         comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
         user: this.$store.state.user })
@@ -183,17 +183,17 @@ export default {
 
 <style>
 .avatar {
-  display:inline-block; 
-  float:left; 
+  display:inline-block;
+  float:left;
   padding-bottom:5px;
 }
 
 .timestamp {
-  display:inline-block; 
-  float:right; 
-  padding-top:8px; 
-  padding-bottom:10px; 
-  color: #a0a6b2; 
+  display:inline-block;
+  float:right;
+  padding-top:8px;
+  padding-bottom:10px;
+  color: #a0a6b2;
   font-size:12px;
 }
 </style>

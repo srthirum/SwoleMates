@@ -12,13 +12,13 @@
       </v-icon>&nbsp; Upload a photo
       </v-btn>
         <v-card>
-          <v-card-title class="headline">Upload Your Photo</v-card-title> 
+          <v-card-title class="headline">Upload Your Photo</v-card-title>
             <v-form ref="fieldForm" v-model="valid" class="form-container">
               <v-container fluid>
                 <v-flex xs12>
-                    <v-text-field 
+                    <v-text-field
                       v-model.trim="photoDescription"
-                      :rules="descriptionRules" 
+                      :rules="descriptionRules"
                       label="Description*"
                       required>
                     </v-text-field>
@@ -26,9 +26,9 @@
                     <v-form ref="uploadForm" @submit.prevent="postProgressItem">
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                          <v-btn 
-                            color="blue darken-1" 
-                            flat 
+                          <v-btn
+                            color="blue darken-1"
+                            flat
                             @click="resetForm">
                           Close</v-btn>
                           <v-btn
@@ -36,7 +36,7 @@
                             color="orange"
                             class="white--text"
                             type="submit"
-                            :disabled="disableButton" 
+                            :disabled="disableButton"
                             @click="resetForm">
                           Post</v-btn>
                       </v-card-actions>
