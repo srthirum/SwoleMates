@@ -18,6 +18,8 @@
         <v-card-actions>
           <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
         </v-card-actions>
+        <v-btn @click="updateFromNutrition(testJSON)">Test</v-btn>
+        <div v-on:nutritionReceived="updateFromNutrition($event.values)"
       </v-card>
     </v-flex>
   </v-layout>
@@ -31,6 +33,7 @@ export default {
   props: ['item'],
   data () {
     return {
+      testJSON: {"calories":4994.55,"name":"Pork, fresh, leg (ham), rump half, separable lean only, cooked, roasted - 1 roast","serving_size (grams)":3027},
       imageUrl: 'https://bluewater.co.uk/sites/bluewater/files/styles/image_spotlight_large/public/images/spotlights/burger-cropped.jpg?itok=SeFYMFP6'
     }
   },
@@ -76,6 +79,22 @@ export default {
           console.log(errorMsg, error)
         })
       }
+    },
+    updateFromNutrition: function (values) {
+      this.updateAField('calories', values.calories)
+      this.updateAField('Serving Size (grams)', values['serving_size (grams)'])
+    
+    },
+
+    updateAField: function (field, newVal) {
+      var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
+      reference.update({
+        ['nutrition.'+ field]: { attribute: field, val: newVal }
+      })
+      .catch(error => {
+        var errorMsg = 'Error updating post'
+        console.error(errorMsg, error)
+      })
     }
   }
 }
