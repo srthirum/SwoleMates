@@ -19,7 +19,7 @@
           <v-btn flat color="red" @click="deleteItem">Delete</v-btn>
         </v-card-actions>
         <v-btn @click="updateFromNutrition(testJSON)">Test</v-btn>
-        <div v-on:nutritionReceived="updateFromNutrition($event.values)"
+        <div v-on:nutrition-received="updateFromNutrition($event.values)"
       </v-card>
     </v-flex>
   </v-layout>
