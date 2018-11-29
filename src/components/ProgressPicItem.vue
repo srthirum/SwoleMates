@@ -9,11 +9,16 @@
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
                     <v-flex>
-                      <div id="avatar" align="left">
-                        <v-avatar slot="activator" size="36px">
-                          <img :src="item.user.profPhotoUrl">
-                        </v-avatar> {{item.user.username}}
-                      </div>
+                      <router-link :to="{ path: 'user'+'/'+item.user.uid }" style='text-decoration: none'>
+                        <div align="left">
+                          <v-avatar slot="activator" size="36px">
+                            <img :src="item.user.profPhotoUrl">
+                          </v-avatar> 
+                          <span style='margin-left: 0.5em'>
+                            {{ item.user.username }}
+                          </span>
+                        </div>
+                      </router-link>
                       <div :title="dateString">
                         {{photoDate}}
                       </div>
