@@ -79,7 +79,17 @@ export default {
   },
   watch: {
     '$route' (to, from) {
-      console.log(this.$route.params.uid)
+      // clear data
+      this.user = {}
+      this.userProgPics = []
+      this.userMeals = []
+      this.isFriend = undefined
+      
+      // then get data
+      this.getUser()
+      this.getUserProgPics()
+      this.getUserMeals()
+      this.checkIsFriend()
     },
     user: function (newData, oldData) {
       this.checkIsFriend()

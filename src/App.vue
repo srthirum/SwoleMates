@@ -5,7 +5,7 @@
         <v-list>
           <v-list-tile avatar :to="/user/ + this.$store.state.user.uid">
             <v-list-tile-avatar>
-              <img src="https://randomuser.me/api/portraits/men/85.jpg">
+              <img :src="this.$store.state.user.profPhotoUrl">
             </v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title>{{ this.$store.state.user.username }}</v-list-tile-title>
