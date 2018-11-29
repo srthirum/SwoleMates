@@ -12,37 +12,38 @@
       </v-btn>
         <v-card>
           <v-card-title class="headline">Upload Your Meal</v-card-title> 
-            <v-form class="form-container">
+            <v-form ref="fieldForm" class="form-container">
               <v-container fluid>
                 <v-flex xs12>
-                    <v-text-field 
+                    <v-text-field
+                      ref="clearDescription" 
                       v-model.trim="photoDescription" 
                       label="Meal*"
                       required>
                     </v-text-field>
                     <v-text-field
+                      ref="clearCalories"
                       v-model.trim="calories"
                       label="Calories*"
                       type="number"
                       required>
                     </v-text-field>
-                  <v-form @submit.prevent="postMealPhoto">
+                  <v-form ref="uploadForm" @submit.prevent="postMealPhoto">
                     <input ref="imageInput" type="file" @change="onFileChange">
                       <v-card-actions>
                         <v-spacer></v-spacer>
                           <v-btn 
                             color="blue darken-1" 
                             flat 
-                            @click="dialog=false">
+                            @click="resetForm">
                           Close</v-btn>
                           <v-btn
                             ref="postButton"
                             color="orange"
                             class="white--text"
                             type="submit"
-                            :disabled="!file"
-                            @click="dialog=false"
-                            onClick="this.form.reset()">
+                            :disabled="disableButton"
+                            @click="resetForm">
                             Post
                           </v-btn>
                       </v-card-actions>
@@ -69,23 +70,27 @@ export default {
       mealEntries: [],
       photoDescription: '',
       calories: '',
-      likes: 0,
       file: null,
-      dialog: false
-    }
-  },
-  watch: {
-    dialog (val){
-      if (!val){
-        this.$refs.imageInput.value = ''
-        this.$refs.postButton.disabled = true
-      }
+      dialog: false,
+      disableButton: true
     }
   },
   firestore: {
     mealEntries: fsdb.collection('meals')
   },
+  watch: {
+    dialog (val){
+      if (!val){
+        this.$refs.imageInput.value = ''
+        this.$refs.fieldForm.reset()
+      }
+    }
+  },
   methods: {
+    resetForm: function (){
+      this.dialog = false
+      this.disableButton = true
+    },
     postMealPhoto: function () {
       // first create item in firestore database
       this.$firestoreRefs.mealEntries.add({
@@ -131,6 +136,7 @@ export default {
         return
       }
       this.file = files[0]
+      this.disableButton = false
     }
   }
 }
