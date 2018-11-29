@@ -9,11 +9,16 @@
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
                     <v-flex>
-                      <div id="avatar" align="left">
-                        <v-avatar slot="activator" size="36px">
-                          <img src="https://cdn.pixabay.com/photo/2013/07/13/12/07/avatar-159236_1280.png">
-                        </v-avatar> {{item.user.username}}
-                      </div>
+                      <router-link :to="{ path: 'user'+'/'+item.user.uid }" style='text-decoration: none'>
+                        <div align="left">
+                          <v-avatar slot="activator" size="36px">
+                            <img :src="item.user.profPhotoUrl">
+                          </v-avatar>
+                          <span style='margin-left: 0.5em'>
+                            {{ item.user.username }}
+                          </span>
+                        </div>
+                      </router-link>
                       <div :title="dateString">
                         {{photoDate}}
                       </div>
@@ -44,7 +49,20 @@
                           </v-btn>
                           <v-btn v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
                       </v-card-actions>
-                      <v-flex> comments go here </v-flex>
+                      <v-form>
+                        <v-text-field
+                          v-model.trim="newComment"
+                          label="Comment..."
+                          required
+                        ></v-text-field>
+                        <v-btn @click="postComment">
+                          Post Comment
+                        </v-btn>
+                      </v-form>
+                      <h4>Comments</h4>
+                      <div v-for="comment in item.comments">
+                       <h5>{{ comment.user.email }}:</h5> <p>{{ comment.commentText }} </p>
+                        </div>
                     </v-flex>
                 </v-layout>
 
@@ -61,12 +79,15 @@
 
 import { fsdb, storage } from '../main.js'
 import { timeAgoDate } from '../util/time.js'
+import firebase from 'firebase/app'
+
 export default {
   name: 'progress-pic-item',
   props: ['item'],
   data () {
     return {
-      imageUrl: ''
+      imageUrl: '',
+      newComment: ''
     }
   },
   mounted: function () {
@@ -86,13 +107,9 @@ export default {
         return new Date(this.item.created.seconds * 1000).toString()
       }
     },
-
     isOwner: function() {
-      if(this.item.user.uid === this.$store.state.user.uid)
-        return true
-      else
-        return false
-    },
+      return (this.item.user.uid === this.$store.state.user.uid) ? true : false
+    }
   },
   watch: {
     item: function (newData, oldData) {
@@ -125,6 +142,19 @@ export default {
           })
         }
       }
+    }, postComment: function () {
+      console.log("PostComment: " + this.newComment);
+      var reference = this.$firestoreRefs.progressPicItems.doc(this.item.id);
+
+      reference.update({
+        comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
+        user: this.$store.state.user })
+       })
+      .catch(error => {
+        var errorMsg = 'Error creating comment'
+        console.error(errorMsg, error)
+      })
+      this.newComment = "";
     }
   }
 }

@@ -38,7 +38,7 @@ export default {
     }
   },
   firestore: {
-    progressPicItems: fsdb.collection('progress-post')
+    progressPicItems: fsdb.collection('progress-post').orderBy('created', 'desc')
   }
 }
 </script>
