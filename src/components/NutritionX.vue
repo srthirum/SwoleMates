@@ -17,8 +17,10 @@
           </v-card-title>
         </div>
         <div v-else>
+          <v-card-title>
           eat my wang this is ur nutrition info fucker
           {{nutrition}}
+          </v-card-title>
         <v-divider></v-divider>
 
         <v-card-actions>
@@ -63,7 +65,7 @@ var _calorieRange   = {
 import axios from 'axios'
 
 export default {
-  props: ['query'], // what to send to nutritionX
+  props: ['query', 'show'], // what to send to nutritionX
   data () {
     return{
       inProgress: false, // progress bar
@@ -71,14 +73,15 @@ export default {
       nutrition: {} // the returned nutrition info
       }
     },
-    
-  mounted: function() {
-      console.log('penis')
-      console.log(food)
+
+  watch: {
+    query() {
+      console.log('penis theres a change on show')
+      console.log(this.query)
       this.inProgress = true
-      this.query = food
-      this.getInfo()  
-  }
+      this.getInfo()
+    }
+  },
 
   methods: {
     // wrapper function for vision and nutritionX
@@ -92,7 +95,7 @@ export default {
         // update modal information
         console.log("the shit to extract is " + JSON.stringify(data.hits[0]))
         this.nutrition    = this.extractFields(data.hits[0].fields)
-        this.$store.commit('nutrition', this.nutrition)
+        this.$emit('nutrition-recieved', this.nutrition)
         //done processing get rid of progress bar
         this.inProgress = false
       })

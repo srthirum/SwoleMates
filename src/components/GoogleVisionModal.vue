@@ -54,12 +54,13 @@
           </v-btn>
         </v-card-actions>
       </div>
-      <div v-if='showNutrition'>
-      <nutrition-x query='query'></nutrition-x>
+      <div>
+        in show nurition
+        {{query}}
       </div>
       </v-card>
     </v-dialog>
-    <nutrition-x ref='nutrition'></nutrition-x>
+    <nutrition-x :query="query" @nutrition-recieved="logit"></nutrition-x>
   </div>
 </template>
 
@@ -80,12 +81,15 @@ export default {
       showNutrition: false,
       dialog: false,
       labels: {}, // labels from google vision
-      query: "", // label sent to nutritionX
+      query: "dummy", // label sent to nutritionX
       message: {} // nutrition information
       }
     },
 
   methods: {
+    logit: function (value){
+      console.log("that shit returend by nutriont is: " + value.calories)
+    },
     // do nutrition info getter and close dialog box
     getNutritionInfo: function(food){
       this.dialog = false
