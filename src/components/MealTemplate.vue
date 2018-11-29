@@ -45,6 +45,8 @@
                       </v-spacer>
                   </v-flex>
                 </v-layout>
+                <updateMeal v-if="isOwner" :item="this.item">
+                </updateMeal>
                 
                 <v-form>
                   <v-text-field
@@ -61,24 +63,6 @@
                   <h5>{{ comment.user.email }}:</h5> 
                   <p>{{ comment.commentText }} </p>
                 </div>
-
-                <v-form v-if="isOwner">
-                  <v-text-field
-                  v-model.trim="updatedField"
-                  label="New Nutrition Fact"
-                  required
-                  ></v-text-field>
-                  <v-text-field
-                  v-model.trim="updatedValue"
-                  label="Value"
-                  required
-                  ></v-text-field>
-                  <v-btn @click="updatePost">
-                    Update
-                  </v-btn>
-
-                </v-form>
-
               </v-container>
             </v-card>
           </v-flex>
@@ -93,10 +77,14 @@
 import { fsdb, storage } from '../main.js'
 import { timeAgoDate } from '../util/time.js'
 import firebase from 'firebase/app'
+import updateMeal from './UpdateMeal.vue'
 
 export default {
   name: 'mealTemplate',
   props: ['item'],
+  components: {
+    updateMeal
+  },
   data () {
     return {
       newComment: "",
