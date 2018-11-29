@@ -56,11 +56,14 @@ import { fsdb } from '../main.js'
 import ProgressPicItem from '../components/ProgressPicItem.vue'
 import MealTemplate from '../components/MealTemplate.vue'
 import ProfileGrid from '../components/ProfileGrid.vue'
+import UpdateMeal from '../components/UpdateMeal.vue'
+
 export default {
   components: {
     ProgressPicItem,
     MealTemplate,
     ProfileGrid,
+    UpdateMeal
 
   },
   data () {
