@@ -50,6 +50,18 @@ export default {
       this.myPrivateProgressPicsItems === pics
     })
   },
+  watch: {
+    error (value) {
+      if (value) {
+        this.alert = true
+      }
+    },
+    alert (value) {
+      if (!value) {
+        this.$store.commit('setError', null)
+      }
+    }
+  },
   mounted: function () {
     // get friends, and then get the friend pics
     this.getFriends(this.getFriendPrivatePics)

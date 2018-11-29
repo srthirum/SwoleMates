@@ -5,8 +5,8 @@
         <h1 v-if="user">{{ user.username }}</h1>
         <h1 v-else>User not found</h1>
         <v-spacer>
-          <v-btn v-if="this.$store.state.user.uid!=user.uid && isFriend==false" @click="addFriend">
-            Add Friend
+          <v-btn v-if="this.$store.state.user.uid!=user.uid && isFriend==false" @click="createFriendRequest">
+            Send Friend Request
           </v-btn>
           <v-btn v-if="isFriend" @click="deleteFriend">
             Delete Friend
@@ -63,6 +63,7 @@
 import { fsdb } from '../main.js'
 import ProgressPicItem from '../components/ProgressPicItem.vue'
 import MealTemplate from '../components/MealTemplate.vue'
+import firebase from 'firebase/app'
 
 export default {
   components: {
@@ -144,24 +145,12 @@ export default {
         console.log("Error getting document:", error)
       })
     },
-    addFriend: function () {
-      fsdb.collection('users').doc(this.$store.state.user.uid).collection('friends').doc(this.user.uid).set({
-        uid: this.user.uid
-      })
-      .then(() => {
-        this.isFriend = true
-      })
-      .catch(error => {
-        var errorMsg = 'Error adding friend'
-        console.error(errorMsg, error)
-        this.$store.commit('setError', error.message)
-      })
-    },
     deleteFriend: function () {
       fsdb.collection('users').doc(this.$store.state.user.uid).collection('friends').doc(this.user.uid).delete()
       .then(() => {
         this.isFriend = false
       })
+      fsdb.collection('users').doc(this.user.uid).collection('friends').doc(this.$store.state.user.uid).delete()
       .catch(error => {
         var errorMsg = 'Error deleting friend'
         console.error(errorMsg, error)
@@ -176,6 +165,20 @@ export default {
       })
       .catch(error => {
         console.log("Error determining if is friend:", error)
+        this.$store.commit('setError', error.message)
+      })
+    },
+    createFriendRequest: function () {
+      fsdb.collection('users').doc(this.user.uid).collection('requests').doc(this.$store.state.user.uid).set({
+        uid: this.$store.state.user.uid,
+        created: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        // set button to friend request pending 
+      })
+      .catch(error => {
+        var errorMsg = 'Error creating friend request'
+        console.error(errorMsg, error)
         this.$store.commit('setError', error.message)
       })
     }
