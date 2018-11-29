@@ -1,15 +1,54 @@
 <template>
-  <v-form>
-    <v-text-field
-      v-model.trim="photoDescription"
-      label="Description"
-      required
-    ></v-text-field>
-    <input type="file" @change="onFileChange">
-    <v-btn :disabled="!file" @click="postProgressItem">
-      Post
-    </v-btn>
-  </v-form>
+  <v-app id="dialog_box" style="height: 70px;">
+    <v-layout row justify-center>
+      <v-dialog
+        v-model="dialog"
+        persistent
+        max-width="500px"
+      >
+      <v-btn slot="activator" color="orange" class="white--text" @click="dialog=true">
+      <v-icon color="white" medium>
+        cloud_upload
+      </v-icon>&nbsp; Upload a photo
+      </v-btn>
+        <v-card>
+          <v-card-title class="headline">Upload Your Photo</v-card-title> 
+            <v-form ref="fieldForm" v-model="valid" class="form-container">
+              <v-container fluid>
+                <v-flex xs12>
+                    <v-text-field 
+                      v-model.trim="photoDescription"
+                      :rules="descriptionRules" 
+                      label="Description*"
+                      required>
+                    </v-text-field>
+                    <input ref="imageInput" type="file" @change="onFileChange" >
+                    <v-form ref="uploadForm" @submit.prevent="postProgressItem">
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                          <v-btn 
+                            color="blue darken-1" 
+                            flat 
+                            @click="resetForm">
+                          Close</v-btn>
+                          <v-btn
+                            ref="submitButton"
+                            color="orange"
+                            class="white--text"
+                            type="submit"
+                            :disabled="disableButton" 
+                            @click="resetForm">
+                          Post</v-btn>
+                      </v-card-actions>
+                  </v-form>
+                <small>*indicates required field</small>
+              </v-flex>
+            </v-container>
+          </v-form>
+        </v-card>
+      </v-dialog>
+    </v-layout>
+  </v-app>
 </template>
 
 <script>
@@ -21,16 +60,34 @@ export default {
   name: 'post-progress-pic-item',
   data () {
     return {
+      valid: true,
       progressPicItems: [],
       photoDescription: '',
-      file: null
+      descriptionRules: [
+        v => !!v || "Description is required"
+      ],
+      file: null,
+      dialog: false,
+      disableButton: true
     }
   },
   firestore: {
     progressPicItems: fsdb.collection('progress-post')
   },
+  watch: {
+    dialog (val){
+      if (!val){
+        this.$refs.imageInput.value = ''
+        this.$refs.fieldForm.reset()
+      }
+    }
+  },
   methods: {
-    postProgressItem: function () {
+    resetForm: function (){
+      this.dialog = false
+      this.disableButton = true
+    },
+    postProgressItem: function (event) {
       // first create item in firestore database
       this.$firestoreRefs.progressPicItems.add({
         description: this.photoDescription,
@@ -42,6 +99,9 @@ export default {
         this.photoDescription = ''
         // then upload the image file
         uploadFile(docRef.id)
+      })
+      .then(() => {
+        event.target.reset();
       })
       .catch(error => {
         var errorMsg = 'Error creating post document'
@@ -55,6 +115,9 @@ export default {
           // then edit the database item with the file location
           this.$firestoreRefs.progressPicItems.doc(docId).update({
             fileLocation: snapshot.ref.location.path
+          })
+          .then(() => {
+            this.file = null
           })
           .catch(error => {
             var errorMsg = 'Error editing document file location'
@@ -73,6 +136,7 @@ export default {
         return
       }
       this.file = files[0]
+      this.disableButton = false
     }
   }
 }
