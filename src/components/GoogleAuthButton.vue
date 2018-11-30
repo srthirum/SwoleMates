@@ -18,7 +18,7 @@ export default {
 
 <style>
 .google-auth-button {
-  height:1.5em; 
+  height:1.5em;
   padding-right: 1em;
 }
 

@@ -4,7 +4,7 @@
 
       <div id="progress-pic">
         <v-app id="v-progress-pic">
-          <v-flex> 
+          <v-flex>
             <v-card>
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
@@ -13,7 +13,7 @@
                         <div align="left">
                           <v-avatar slot="activator" size="36px">
                             <img :src="item.user.profPhotoUrl">
-                          </v-avatar> 
+                          </v-avatar>
                           <span style='margin-left: 0.5em'>
                             {{ item.user.username }}
                           </span>
@@ -28,8 +28,9 @@
                       </v-img>
 
                       <v-card-actions>
-                        <v-spacer> 
+                        <v-spacer>
                           posted by: {{item.user.email}}
+                          {{item.description}}
                         </v-spacer>
                         <v-spacer>
                           {{item.description}}
@@ -144,7 +145,7 @@ export default {
     }, postComment: function () {
       console.log("PostComment: " + this.newComment);
       var reference = this.$firestoreRefs.progressPicItems.doc(this.item.id);
-      
+
       reference.update({
         comments: firebase.firestore.FieldValue.arrayUnion({ commentText: this.newComment,
         user: this.$store.state.user })
