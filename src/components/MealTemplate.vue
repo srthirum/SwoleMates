@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm6 offset-sm3>
+    <v-flex xs12 sm8 offset-sm3>
       <div id="progress-pic">
         <v-app id="v-progress-pic">
             <v-card>
