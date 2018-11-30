@@ -69,7 +69,7 @@ export default {
     return {
       mealEntries: [],
       photoDescription: '',
-      calories: '',
+      ['nutrition.'+'calories']: '',
       file: null,
       dialog: false,
       disableButton: true
