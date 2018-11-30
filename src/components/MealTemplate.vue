@@ -3,7 +3,6 @@
     <v-flex xs12 sm8 offset-sm3>
       <div id="progress-pic">
         <v-app id="v-progress-pic">
-          <v-flex>
             <v-card>
               <v-container fluid grid-list-md>
                 <v-layout row wrap>
@@ -33,6 +32,11 @@
                         <v-icon>send</v-icon>
                       </v-btn>
                       <v-btn style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
+                      <google-vision-modal
+                        v-if="isOwner"
+                        :pictureUrl="imageUrl"
+                        @nutrition-recieved="updateFromNutrition">
+                      </google-vision-modal>
                     </v-card-actions>
                       <v-spacer align="left">
                         &nbsp; &nbsp; &nbsp; {{item.food}}
@@ -65,10 +69,9 @@
                 </div>
               </v-container>
             </v-card>
-          </v-flex>
         </v-app>
       </div>
-
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
@@ -78,12 +81,14 @@ import { fsdb, storage } from '../main.js'
 import { timeAgoDate } from '../util/time.js'
 import firebase from 'firebase/app'
 import updateMeal from './UpdateMeal.vue'
+import GoogleVisionModal from './GoogleVisionModal.vue'
 
 export default {
   name: 'mealTemplate',
   props: ['item'],
   components: {
-    updateMeal
+    updateMeal,
+    GoogleVisionModal
   },
   data () {
     return {
@@ -171,6 +176,18 @@ export default {
       }).then(() => {
         this.updatedField = ""
         this.updatedValue = ""
+    })},
+    updateFromNutrition: function (values) {
+      // console.log('fuuccucucucuckkk '+values.calories)
+      this.updateAField('calories', values.calories)
+      this.updateAField('Serving Size (grams)', values['serving_size (grams)'])
+
+    },
+
+    updateAField: function (field, newVal) {
+      var reference = this.$firestoreRefs.mealItems.doc(this.item.id);
+      reference.update({
+        ['nutrition.'+ field]: { attribute: field, val: newVal }
       })
       .catch(error => {
         var errorMsg = 'Error updating post'

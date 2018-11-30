@@ -37,12 +37,6 @@
       :item='post'>
     </progress-pic-item>
 
-    <!-- <meal-template
-      v-for="meal in userMeals"
-        :key='meal.id'
-        :item='meal'>
-    </meal-template> -->
-
   </v-flex xs4>
       </v-layout>
     </v-container>

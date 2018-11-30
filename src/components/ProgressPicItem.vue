@@ -30,6 +30,7 @@
                       <v-card-actions>
                         <v-spacer>
                           posted by: {{item.user.email}}
+                          {{item.description}}
                         </v-spacer>
                         <v-spacer>
                           {{item.description}}
