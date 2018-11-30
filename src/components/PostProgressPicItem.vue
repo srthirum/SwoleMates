@@ -39,6 +39,10 @@
                             :disabled="disableButton"
                             @click="resetForm">
                           Post</v-btn>
+                          <v-checkbox
+                            label="Private"
+                            v-model="isPrivate">
+                          </v-checkbox>
                       </v-card-actions>
                   </v-form>
                 <small>*indicates required field</small>
@@ -63,12 +67,15 @@ export default {
       valid: true,
       progressPicItems: [],
       photoDescription: '',
+      file: null,
+      
       descriptionRules: [
         v => !!v || "Description is required"
       ],
       file: null,
       dialog: false,
-      disableButton: true
+      disableButton: true,
+      isPrivate: false
     }
   },
   firestore: {
@@ -93,7 +100,8 @@ export default {
         description: this.photoDescription,
         created: firebase.firestore.FieldValue.serverTimestamp(),
         user: this.$store.state.user,
-        fileLocation: ''
+        fileLocation: '',
+        isPrivate: this.isPrivate
       })
       .then(docRef => {
         this.photoDescription = ''

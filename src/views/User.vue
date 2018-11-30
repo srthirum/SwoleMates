@@ -2,8 +2,26 @@
   <div id="profile">
   <v-container fluid>
     <v-layout row wrap>
-      <v-card color ="grey lighten-1" id ="grid-container" >
-
+      <v-flex xs12 class="text-xs-center" mt-5>
+        <h1 v-if="user">{{ user.username }}</h1>
+        <h1 v-else>User not found</h1>
+        <v-spacer>
+          <v-btn v-if="requestSent" :disabled="requestSent">
+            Friend Request Pending
+          </v-btn>
+          <v-btn v-if="requestReceived" color="primary" to="/notifications">
+            Respond to Request
+          </v-btn>
+          <v-btn v-if="this.$store.state.user.uid!=user.uid && isFriend==false && !requestSent && !requestReceived" 
+            :disabled="loading" @click="createFriendRequest" color="primary">
+            Send Friend Request
+          </v-btn>
+          <v-btn v-if="isFriend" @click="deleteFriend">
+            Delete Friend
+          </v-btn>
+        </v-spacer>
+      </v-flex>
+    <v-card color ="grey lighten-1" id ="grid-container" >
 
       <v-flex xs12 class="text-xs-left" mt-3 v-if="user">
         <v-spacer class="py-5" id="position">
@@ -51,6 +69,7 @@ import ProgressPicItem from '../components/ProgressPicItem.vue'
 import MealTemplate from '../components/MealTemplate.vue'
 import ProfileGrid from '../components/ProfileGrid.vue'
 import UpdateMeal from '../components/UpdateMeal.vue'
+import firebase from 'firebase/app'
 
 export default {
   components: {
@@ -58,19 +77,18 @@ export default {
     MealTemplate,
     ProfileGrid,
     UpdateMeal
-
   },
   data () {
     return {
       user: {},
       userProgPics: [],
       userMeals: [],
+      isFriend: undefined,
+      requestSent: false,
+      requestReceived: false,
       userPhotos: []
     }
   },
-  // firestore: {
-  //   userProgPics: fsdb.collection('progress-post')
-  // },
   watch: {
     '$route' (to, from) {
       // clear data
@@ -78,18 +96,31 @@ export default {
       this.userProgPics = []
       this.userMeals = []
       this.isFriend = undefined
-
-      // then get data
+      
+      // then get data, essentially calling mounted again
       this.getUser()
       this.getUserProgPics()
       this.getUserMeals()
       this.checkIsFriend()
+      this.checkPendingSentRequest()
+      this.checkPendingReceiveRequest()
+    },
+    user: function (newData, oldData) {
+      this.checkIsFriend()
+    }
+  },
+  computed: {
+    loading () {
+      return this.$store.state.loading
     },
   },
   mounted: function () {
     this.getUser()
     this.getUserProgPics()
     this.getUserMeals()
+    this.checkIsFriend()
+    this.checkPendingSentRequest()
+    this.checkPendingReceiveRequest()
   },
   methods: {
     concatArray: function (arr1, arr2){
@@ -103,6 +134,7 @@ export default {
           this.user = null
         } else {
           this.user = doc.data()
+          this.user.uid = doc.id
         }
       })
       .catch(error => {
@@ -136,6 +168,70 @@ export default {
       .catch(error => {
         this.$store.commit('setError', error.message)
         console.log("Error getting document:", error)
+      })
+    },
+    deleteFriend: function () {
+      fsdb.collection('users').doc(this.$store.state.user.uid).collection('friends').doc(this.user.uid).delete()
+      .then(() => {
+        this.isFriend = false
+      })
+      fsdb.collection('users').doc(this.user.uid).collection('friends').doc(this.$store.state.user.uid).delete()
+      .catch(error => {
+        var errorMsg = 'Error deleting friend'
+        console.error(errorMsg, error)
+        this.$store.commit('setError', error.message)
+      })
+    },
+    checkIsFriend: function () {
+      if (this.user.uid == undefined) return // break out if user not defined
+      fsdb.collection('users').doc(this.$store.state.user.uid).collection('friends').doc(this.user.uid).get()
+      .then(doc => {
+        this.isFriend = (doc.exists) ? true : false
+      })
+      .catch(error => {
+        console.log("Error determining if is friend:", error)
+        this.$store.commit('setError', error.message)
+      })
+    },
+    createFriendRequest: function () {
+      this.$store.commit('setLoading', true)
+      fsdb.collection('users').doc(this.user.uid).collection('requests').doc(this.$store.state.user.uid).set({
+        uid: this.$store.state.user.uid,
+        user: this.$store.state.user,
+        created: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        this.$store.commit('setLoading', false)
+        this.requestSent = true
+      })
+      .catch(error => {
+        var errorMsg = 'Error creating friend request'
+        console.error(errorMsg, error)
+        this.$store.commit('setError', error.message)
+      })
+    },
+    checkPendingSentRequest: function () {
+      // check if already sent one to the user
+      fsdb.collection('users').doc(this.$route.params.uid).collection('requests').doc(this.$store.state.user.uid).get()
+      .then((doc) => {
+        this.requestSent = doc.exists ? true : false
+      })
+      .catch(error => {
+        var errorMsg = 'Error checking pending request sent'
+        console.error(errorMsg, error)
+        this.$store.commit('setError', error.message)
+      })
+    },
+    checkPendingReceiveRequest: function () {
+      // check if the user already sent one to me
+      fsdb.collection('users').doc(this.$store.state.user.uid).collection('requests').doc(this.$route.params.uid).get()
+      .then((doc) => {
+        this.requestReceived = doc.exists ? true : false
+      })
+      .catch(error => {
+        var errorMsg = 'Error checking pending request received'
+        console.error(errorMsg, error)
+        this.$store.commit('setError', error.message)
       })
     }
   }
