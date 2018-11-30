@@ -1,26 +1,31 @@
 <template>
-  <v-container fluid>
-    <v-layout row wrap>
+  <v-container>
+    <v-layout justify-center row wrap>
+      <v-alert
+        v-model="alert"
+        type="success"
+        dismissible outline>
+        You just made a friend :)
+      </v-alert>
       <v-flex xs12 class="text-xs-center" mt-5>
         <h1>Notifications</h1>
       </v-flex>
-
-      <v-flex xs12 class="text-xs-center" mt-5>
+      <v-flex md8 mt-5>
         <v-list>
           <v-subheader>Friend Requests</v-subheader>
           <v-list-tile
-            v-for="item in notifications"
+            v-for="item in friendRequests"
             :key="item.id"
             avatar>
             <router-link :to="/user/+item.uid">
               <v-list-tile-avatar>
-                <img :src="item.avatar">
+                <img :src="item.user.profPhotoUrl">
               </v-list-tile-avatar>
             </router-link>
             
             <v-list-tile-content>
               <router-link :to="/user/+item.uid" style='text-decoration: none'>
-                <v-list-tile-title v-html="item.uid"></v-list-tile-title>
+                <v-list-tile-title v-html="item.user.username"></v-list-tile-title>
               </router-link>
             </v-list-tile-content>
             
@@ -49,15 +54,16 @@ import firebase from 'firebase/app'
 export default {
   data () {
     return {
-      notifications: []
+      friendRequests: [],
+      alert: false, 
     }
   },
   created: function () {
     // manually create binding
-    this.$bind('notifications', fsdb.collection('users').doc(this.$store.state.user.uid)
+    this.$bind('friendRequests', fsdb.collection('users').doc(this.$store.state.user.uid)
       .collection('requests').orderBy('created', 'desc'))
     .then(array => {
-      this.notifications === array
+      this.friendRequests === array
     })
   },
   methods: {
@@ -72,6 +78,7 @@ export default {
       })
       .then(() => {
         this.deleteFriendRequest(uid)
+        this.alert = true
       })
       .catch(error => {
         var errorMsg = 'Error adding friend'
@@ -82,16 +89,25 @@ export default {
     deleteFriendRequest: function (uid) {
       fsdb.collection('users').doc(this.$store.state.user.uid).collection('requests').doc(uid).delete()
       .then(() => {
-        console.log('deleted one')
-      })
-      fsdb.collection('users').doc(uid).collection('requests').doc(this.$store.state.user.uid).delete()
-      .then(() => {
-        console.log('deleted two')
+        fsdb.collection('users').doc(uid).collection('requests').doc(this.$store.state.user.uid).delete()
       })
       .catch(error => {
         var errorMsg = 'Error deleting friend requests'
         console.error(errorMsg, error)
         this.$store.commit('setError', error.message)
+      })
+    },
+    addUserInfoToFriendRequests: function () {
+      this.friendRequests.forEach(req => {
+        fsdb.collection('users').doc(req.uid).get()
+        .then((doc) => {
+          req.user = doc.data()
+        })
+        .catch((error) => {
+          var errorMsg = 'Error getting user info'
+          console.error(errorMsg, error)
+          this.$store.commit('setError', error.message)
+        })
       })
     }
   },
@@ -104,6 +120,9 @@ export default {
     }
   },
   watch: {
+    friendRequests (value) {
+      // this.addUserInfoToFriendRequests()
+    }, 
     error (value) {
       if (value) {
         this.alert = true
