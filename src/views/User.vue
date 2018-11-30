@@ -1,4 +1,5 @@
 <template>
+  <div id="profile">
   <v-container fluid>
     <v-layout row wrap>
       <v-flex xs12 class="text-xs-center" mt-5>
@@ -20,62 +21,62 @@
           </v-btn>
         </v-spacer>
       </v-flex>
+    <v-card color ="grey lighten-1" id ="grid-container" >
 
-      <v-flex xs12 class="text-xs-center" mt-3 v-if="user">
-        <v-spacer class="py-5">
-          <v-avatar size="256px">
+      <v-flex xs12 class="text-xs-left" mt-3 v-if="user">
+        <v-spacer class="py-5" id="position">
+          <v-avatar size="250px" class="text-xs-center" >
             <img :src="user.profPhotoUrl">
           </v-avatar>
         </v-spacer>
+
+        <h1 v-if="user">{{ user.username }}</h1>
+        <h1 v-else>User not found</h1>
+
         <v-spacer>
-          username: {{ user.username }}
-        </v-spacer>
-        
-        <v-spacer>
-          email: {{ user.email }}
-        </v-spacer>
-        <v-spacer>
-          meals you liked: 
+          <h3>Liked meals:</h3>
           <div v-for="item in user.likedMeals">
             {{ item }}
           </div>
         </v-spacer>
+
         <v-spacer>
-          progress pics you liked: 
+          <h3>progress pics you liked:</h3>
           <div v-for="item in user.likedProgressPics">
             {{ item }}
           </div>
         </v-spacer>
-        <v-spacer>
-          posts:
-          <progress-pic-item 
-            v-for='post in userProgPics'
-            :key='post.id'
-            :item="post">
-          </progress-pic-item>
-
-          meals:
-          <mealTemplate 
-            v-for="meal in userMeals" 
-            :key='meal.id' 
-            :item='meal'>
-          </mealTemplate>
-        </v-spacer>
       </v-flex>
-    </v-layout>
-  </v-container>
+    </v-card>
+  <v-flex xs8 class="text-xs-right">
+    <progress-pic-item
+      v-for="post in userPhotos"
+      :key='post.id'
+      :item='post'>
+    </progress-pic-item>
+
+  </v-flex xs4>
+      </v-layout>
+    </v-container>
+</div>
 </template>
+
+
 
 <script>
 import { fsdb } from '../main.js'
 import ProgressPicItem from '../components/ProgressPicItem.vue'
 import MealTemplate from '../components/MealTemplate.vue'
+import ProfileGrid from '../components/ProfileGrid.vue'
+import UpdateMeal from '../components/UpdateMeal.vue'
 import firebase from 'firebase/app'
 
 export default {
   components: {
     ProgressPicItem,
-    MealTemplate
+    MealTemplate,
+    ProfileGrid,
+    UpdateMeal
   },
   data () {
     return {
@@ -85,6 +86,7 @@ export default {
       isFriend: undefined,
       requestSent: false,
       requestReceived: false,
+      userPhotos: []
     }
   },
   watch: {
@@ -121,6 +123,9 @@ export default {
     this.checkPendingReceiveRequest()
   },
   methods: {
+    concatArray: function (arr1, arr2){
+      return (arr1.concat(arr2))
+    },
     getUser: function () {
       var userDocumentRef = fsdb.collection('users').doc(this.$route.params.uid)
       userDocumentRef.get()
@@ -143,7 +148,8 @@ export default {
         snapshot.forEach(doc => {
           var fullDocData = doc.data()
           fullDocData.id = doc.id
-          this.userProgPics.push(fullDocData)
+          // this.userProgPics.push(fullDocData)
+          this.userPhotos.push(fullDocData)
         })
       })
       .catch(error => {
@@ -155,7 +161,8 @@ export default {
       fsdb.collection('meals').where("user.uid", "==", this.$route.params.uid).get()
       .then(snapshot => {
         snapshot.forEach(doc => {
-          this.userMeals.push(doc.data())
+          // this.userMeals.push(doc.data())
+          this.userPhotos.push(doc.data())
         })
       })
       .catch(error => {
@@ -231,4 +238,21 @@ export default {
 }
 </script>
 
+<style>
+#grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-template-rows: 200px 250px;
+  grid-gap: 10px;
+  padding: 10px;
+}
 
+#position {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+}
+
+
+</style>

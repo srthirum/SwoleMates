@@ -48,7 +48,7 @@
       </span>
       <v-toolbar-title>
         <router-link to="/" tag="span" style="cursor: pointer">
-          {{ appTitle }}
+          <img src="../src/assets/swolemates_logo.png" height="60px">
         </router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
