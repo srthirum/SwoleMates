@@ -28,7 +28,6 @@ export default {
       progressPicItems: [],
       photoDescription: '',
       likes: 0,
-      isLiked: false,
       file: null
     }
   },
@@ -45,8 +44,7 @@ export default {
         created: firebase.firestore.FieldValue.serverTimestamp(),
         user: this.$store.state.user,
         fileLocation: '',
-        likes: this.likes,
-        isLiked: this.isLiked,
+        likes: this.likes
       })
       .then(docRef => {
         this.photoDescription = ''

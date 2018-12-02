@@ -36,31 +36,19 @@
                       </div>
 
                       <v-card-actions align="right">
-                          <v-btn v-show="isLiked" flat color="red" @click="isLiked = !isLiked; likeItem()" icon>
+                          <v-btn v-show="isLiked" flat color="red" @click="likeItem" icon>
                             <v-icon>favorite</v-icon>{{item.likes}}
                           </v-btn>
-                          <v-btn v-show="!isLiked" @click="isLiked = !isLiked; likeItem()" icon>
+                          <v-btn v-show="!isLiked" @click="likeItem" icon>
                             <v-icon>favorite</v-icon>{{item.likes}}
                           </v-btn>
                           <v-btn icon>
-                            <v-icon>send</v-icon>
+                            <v-icon>send</v-icon> {{isLiked}}
                           </v-btn>
                           <v-btn icon style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">
                             <v-icon>delete</v-icon>
                           </v-btn>
                       </v-card-actions>
-<!--                         <v-spacer align="left">
-                          &nbsp; &nbsp; &nbsp; {{item.description}}
-                        </v-spacer>
-                          </v-btn>
-                          <v-btn v-show="!isLiked" @click="isLiked = !isLiked; likeItem()" icon>
-                            <v-icon>favorite</v-icon>{{item.likes}}
-                          </v-btn>
-                          <v-btn icon>
-                            <v-icon>send</v-icon>
-                          </v-btn>
-                          <v-btn style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
-                      </v-card-actions> -->
 
                         <v-spacer align="left">
                           &nbsp; &nbsp; &nbsp; {{item.description}}
@@ -103,9 +91,9 @@ export default {
   data () {
     return {
       imageUrl: '',
-      isLiked: false,
       likes: 0,
-      newComment: ''
+      isLiked: '',
+      newComment: '',
     }
   },
   mounted: function () {
@@ -113,7 +101,7 @@ export default {
   },
   firestore: {
     progressPicItems: fsdb.collection('progress-post'),
-    users: fsdb.collection('users')
+    users: fsdb.collection('users'),
   },
   computed: {
     photoDate: function () {
@@ -128,12 +116,35 @@ export default {
     },
     isOwner: function() {
       return (this.item.user.uid === this.$store.state.user.uid) ? true : false
-    }
+    },
+    likedByUser: function() {
+      var userRef = this.$firestoreRefs.users.doc(this.$store.state.user.uid)
+      var result = false 
+      userRef.get()
+        .then(snap => {
+          var array = snap.get('likedPhotos')
+          console.log(array)
+          if(array != null){
+            result = array.includes(this.item.id)
+            console.log(array.includes(this.item.id))
+          }
+          console.log(result)
+          this.isLiked = result
+          return result
+        })
+        .catch(error => {
+          var errorMsg = 'Error fetching liked image from database'
+          console.log(errorMsg, error)
+      })
+    },
+    assignLike: function() {
+      this.isLiked = likedByUser();
+    },
   },
   watch: {
     item: function (newData, oldData) {
       this.getImageUrl()
-    }
+    },
   },
   methods: {
     deleteItem: function () {
@@ -142,49 +153,52 @@ export default {
         var errorMsg = 'Error deleting item from database'
         console.log(errorMsg, error)
       })
+
       storage.ref().child(this.item.fileLocation).delete()
       .catch(error => {
         var errorMsg = 'Error deleting image file from storage'
         console.log(errorMsg, error)
       })
+
+      userRef.update({
+        "likedPhotos": arrayRef.arrayRemove(this.item.id) 
+      })
     },
+
     likeItem: function () {
       var userRef = this.$firestoreRefs.users.doc(this.$store.state.user.uid)
       var itemRef = this.$firestoreRefs.progressPicItems.doc(this.item.id)
-      var likersRef = this.$firestoreRefs.progressPicItems.doc(this.item.id).collection('likedBy')
+      var likersRef = this.$firestoreRefs.progressPicItems.doc(this.item.id).collection('likedBy').doc(this.$store.state.user.uid)
       var arrayRef = firebase.firestore.FieldValue
+
       userRef.get()
-        .then(user => {
-          if(this.item.isLiked == false){
+        .then(() => {
+          if(this.isLiked == false || this.isLiked == null){
             this.item.likes++
             userRef.update({
               "likedPhotos": arrayRef.arrayUnion(this.item.id) 
             })
-                // created: this.item.created,
-                // description: this.item.description,
-                // fileLocation: this.item.fileLocation,
-                // likes: this.item.likes})
-          this.item.isLiked = true
+            assignLike();
           }else{
             this.item.likes--
             userRef.update({
-              "likedPhotos": arrayRef.arrayRemove(this.item.id) 
+              "likedPhotos": arrayRef.arrayRemove(this.item.id)
             })
-            this.item.isLiked = false
+            assignLike();
           }
             itemRef.update({likes: this.item.likes})
-            itemRef.update({isLiked: this.item.isLiked})
         })
         .catch(error => {
-          var errorMsg = 'Error liking image file in database'
+          var errorMsg = 'Error appending userID file in database'
           console.log(errorMsg, error)
         })
-      // likersRef.doc(this.$store.state.user.uid).get()
+      
+
+      // likersRef.get()
       //   .then(liker => {
       //     //if user liked the photo and is not in the collection
       //     if(this.item.isLiked == false && !liker.exists){
-      //       this.item.likes++
-      //       likersRef.doc(this.$store.state.user.uid).set({
+      //       likersRef.set({
       //         username: this.$store.state.user.username,
       //         email: this.$store.state.user.email,
       //         uid: this.$store.state.user.uid
@@ -192,10 +206,11 @@ export default {
       //       this.item.isLiked = true
       //     //if user unliked photo and is in collection 
       //     }else{
-      //       this.item.likes--
-      //       likersRef.doc(this.$store.state.user.uid).delete()
+      //       likersRef.delete()
       //       this.item.isLiked = false
       //     }
+      //   })
+
       //   itemRef.update({likes: this.item.likes})
       //   itemRef.update({isLiked: this.item.isLiked})
       //   })
