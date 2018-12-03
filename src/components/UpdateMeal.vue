@@ -67,9 +67,9 @@ export default {
       calories: '',
       likes: 0,
       file: null,
+      dialog: false,
       updatedValue: this.updatedField,
       updatedField: this.updatedValue,
-      dialog: false
     }
   },
   firestore () {

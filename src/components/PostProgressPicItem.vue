@@ -68,14 +68,15 @@ export default {
       progressPicItems: [],
       photoDescription: '',
       file: null,
-      
       descriptionRules: [
         v => !!v || "Description is required"
       ],
       file: null,
       dialog: false,
       disableButton: true,
-      isPrivate: false
+      isPrivate: false,
+      likes: 0, 
+      isLiked: false
     }
   },
   firestore: {
@@ -101,7 +102,9 @@ export default {
         created: firebase.firestore.FieldValue.serverTimestamp(),
         user: this.$store.state.user,
         fileLocation: '',
-        isPrivate: this.isPrivate
+        isPrivate: this.isPrivate,
+        likes: this.likes,
+        isLiked: this.isLiked
       })
       .then(docRef => {
         this.photoDescription = ''

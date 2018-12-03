@@ -21,13 +21,6 @@
                       label="Meal*"
                       required>
                     </v-text-field>
-                    <v-text-field
-                      ref="clearCalories"
-                      v-model.trim="calories"
-                      label="Calories*"
-                      type="number"
-                      required>
-                    </v-text-field>
                   <v-form ref="uploadForm" @submit.prevent="postMealPhoto">
                     <input ref="imageInput" type="file" @change="onFileChange">
                       <v-card-actions>
@@ -72,7 +65,9 @@ export default {
       ['nutrition.'+'calories']: '',
       file: null,
       dialog: false,
-      disableButton: true
+      disableButton: true,
+      likes: 0,
+      isLiked: false
     }
   },
   firestore: {
@@ -96,14 +91,14 @@ export default {
       this.$firestoreRefs.mealEntries.add({
         food: this.photoDescription,
         created: firebase.firestore.FieldValue.serverTimestamp(),
-        calories: this.calories,
         user: this.$store.state.user,
         comments: [],
-        fileLocation: ''
+        fileLocation: '',
+        likes: this.likes,
+        isLiked: this.isLiked
       })
       .then(docRef => {
         this.photoDescription = ''
-        this.calories = ''
         // then upload the image file
         uploadFile(docRef.id)
       })

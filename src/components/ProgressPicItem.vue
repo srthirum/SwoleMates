@@ -35,19 +35,18 @@
                         <v-spacer>
                           {{item.description}}
                         </v-spacer>
-                          <v-btn icon>
-                            <v-icon>keyboard_arrow_up</v-icon>
+                          <v-btn v-show="item.isLiked" flat color="red" @click="likeItem" icon>
+                            <v-icon>favorite</v-icon>{{item.likes}}
+                          </v-btn>
+                          <v-btn v-show="!item.isLiked" @click="likeItem" icon>
+                            <v-icon>favorite</v-icon>{{item.likes}}
                           </v-btn>
                           <v-btn icon>
-                            <v-icon>keyboard_arrow_down</v-icon>
+                            <v-icon>send</v-icon> {{likedByUser}}
                           </v-btn>
-                          <v-btn icon>
-                            <v-icon>bookmark</v-icon>
+                          <v-btn icon style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">
+                            <v-icon>delete</v-icon>
                           </v-btn>
-                          <v-btn icon>
-                            <v-icon>share</v-icon>
-                          </v-btn>
-                          <v-btn v-if="isOwner" flat color="red" @click="deleteItem">Delete</v-btn>
                       </v-card-actions>
                       <v-form>
                         <v-text-field
@@ -94,7 +93,8 @@ export default {
     this.getImageUrl()
   },
   firestore: {
-    progressPicItems: fsdb.collection('progress-post')
+    progressPicItems: fsdb.collection('progress-post'),
+    users: fsdb.collection('users')
   },
   computed: {
     photoDate: function () {
@@ -109,6 +109,24 @@ export default {
     },
     isOwner: function() {
       return (this.item.user.uid === this.$store.state.user.uid) ? true : false
+    },
+    likedByUser: function() {
+      var userRef = this.$firestoreRefs.users.doc(this.$store.state.user.uid)
+      var result = false 
+      userRef.get()
+        .then(snap => {
+          var array = snap.get('likedPhotos')
+          console.log(array)
+          if(array != null){
+            result = array.includes(this.item.id)
+            console.log(array.includes(this.item.id))
+          }
+          return result
+        })
+        .catch(error => {
+          var errorMsg = 'Error fetching liked image from database'
+          console.log(errorMsg, error)
+      })
     }
   },
   watch: {
@@ -142,7 +160,36 @@ export default {
           })
         }
       }
-    }, postComment: function () {
+    }, 
+    likeItem: function () {
+      var userRef = this.$firestoreRefs.users.doc(this.$store.state.user.uid)
+      var itemRef = this.$firestoreRefs.progressPicItems.doc(this.item.id)
+      var arrayRef = firebase.firestore.FieldValue
+
+      userRef.get()
+        .then(user => {
+          if(this.item.isLiked == false){
+            this.item.likes++
+            userRef.update({
+              "likedPhotos": arrayRef.arrayUnion(this.item.id) 
+            })
+          this.item.isLiked = true
+          }else{
+            this.item.likes--
+            userRef.update({
+              "likedPhotos": arrayRef.arrayRemove(this.item.id) 
+            })
+            this.item.isLiked = false
+          }
+            itemRef.update({likes: this.item.likes})
+            itemRef.update({isLiked: this.item.isLiked})
+        })
+        .catch(error => {
+          var errorMsg = 'Error liking image file in database'
+          console.log(errorMsg, error)
+        })
+    },
+    postComment: function () {
       console.log("PostComment: " + this.newComment);
       var reference = this.$firestoreRefs.progressPicItems.doc(this.item.id);
 
