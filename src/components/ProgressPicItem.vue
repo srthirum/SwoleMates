@@ -28,10 +28,10 @@
                       </v-img>
 
                       <v-card-actions>
-                        <v-spacer>
+<!--                         <v-spacer>
                           posted by: {{item.user.email}}
                           {{item.description}}
-                        </v-spacer>
+                        </v-spacer> -->
                         <v-spacer>
                           {{item.description}}
                         </v-spacer>
@@ -41,9 +41,9 @@
                           <v-btn v-show="!item.isLiked" @click="likeItem" icon>
                             <v-icon>favorite</v-icon>{{item.likes}}
                           </v-btn>
-                          <v-btn icon>
-                            <v-icon>send</v-icon> {{likedByUser}}
-                          </v-btn>
+
+                          {{likedByUser}}
+
                           <v-btn icon style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">
                             <v-icon>delete</v-icon>
                           </v-btn>

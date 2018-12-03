@@ -3,7 +3,7 @@
   <v-container fluid>
     <v-layout row wrap>
       <v-flex xs12 class="text-xs-center" mt-5>
-        <h1 v-if="user">{{ user.username }}</h1>
+        <h1 v-if="user"></h1>
         <h1 v-else>User not found</h1>
         <v-spacer>
           <v-btn v-if="requestSent" :disabled="requestSent">
@@ -25,7 +25,7 @@
 
       <v-flex xs12 class="text-xs-left" mt-3 v-if="user">
         <v-spacer class="py-5" id="position">
-          <v-avatar size="250px" class="text-xs-center" >
+          <v-avatar size="250px">
             <img :src="user.profPhotoUrl">
           </v-avatar>
         </v-spacer>
@@ -50,13 +50,13 @@
     </v-card>
     <div></div>
   <v-flex xs8 class="text-xs-center">
-    <h2 class="text-xs-center">Here are your progress photos</h2>
+    <h2 class="text-xs-center">Your Progress Photos</h2>
     <progress-pic-item
       v-for="post in userProgPics"
       :key='post.id'
       :item='post'>
     </progress-pic-item>
-    <h2>Here are your meal photos</h2>
+    <h2>Your Meal Photos</h2>
     <meal-template
       v-for="post in userMeals"
       :key='post.id'
