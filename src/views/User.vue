@@ -12,7 +12,7 @@
           <v-btn v-if="requestReceived" color="primary" to="/notifications">
             Respond to Request
           </v-btn>
-          <v-btn v-if="this.$store.state.user.uid!=user.uid && isFriend==false && !requestSent && !requestReceived" 
+          <v-btn v-if="this.$store.state.user.uid!=user.uid && isFriend==false && !requestSent && !requestReceived"
             :disabled="loading" @click="createFriendRequest" color="primary">
             Send Friend Request
           </v-btn>
@@ -48,13 +48,20 @@
         </v-spacer>
       </v-flex>
     </v-card>
-  <v-flex xs8 class="text-xs-right">
+    <div></div>
+  <v-flex xs8 class="text-xs-center">
+    <h2 class="text-xs-center">Here are your progress photos</h2>
     <progress-pic-item
-      v-for="post in userPhotos"
+      v-for="post in userProgPics"
       :key='post.id'
       :item='post'>
     </progress-pic-item>
-
+    <h2>Here are your meal photos</h2>
+    <meal-template
+      v-for="post in userMeals"
+      :key='post.id'
+      :item='post'>
+    </meal-template>
   </v-flex xs4>
       </v-layout>
     </v-container>
@@ -96,7 +103,7 @@ export default {
       this.userProgPics = []
       this.userMeals = []
       this.isFriend = undefined
-      
+
       // then get data, essentially calling mounted again
       this.getUser()
       this.getUserProgPics()
@@ -148,8 +155,8 @@ export default {
         snapshot.forEach(doc => {
           var fullDocData = doc.data()
           fullDocData.id = doc.id
-          // this.userProgPics.push(fullDocData)
-          this.userPhotos.push(fullDocData)
+          this.userProgPics.push(fullDocData)
+          // this.userPhotos.push(fullDocData)
         })
       })
       .catch(error => {
@@ -161,8 +168,8 @@ export default {
       fsdb.collection('meals').where("user.uid", "==", this.$route.params.uid).get()
       .then(snapshot => {
         snapshot.forEach(doc => {
-          // this.userMeals.push(doc.data())
-          this.userPhotos.push(doc.data())
+          this.userMeals.push(doc.data())
+          // this.userPhotos.push(doc.data())
         })
       })
       .catch(error => {
