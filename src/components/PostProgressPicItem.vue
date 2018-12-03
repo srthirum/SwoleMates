@@ -50,9 +50,6 @@ export default {
       })
       .then(docRef => {
         this.photoDescription = ''
-        // this.$firestoreRefs.progressPicItems.doc(docRef.id).collection('likedBy').add({
-        //   liker: '',
-        // })
         // then upload the image file
         uploadFile(docRef.id)
       })
