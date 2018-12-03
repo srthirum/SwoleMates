@@ -11,7 +11,7 @@
         </v-icon>&nbsp; Update Post
       </v-btn>
         <v-card>
-          <v-card-title class="headline">Update Your Meal</v-card-title> 
+          <v-card-title class="headline">Update Your Meal</v-card-title>
             <v-form class="form-container">
               <v-container fluid>
                 <v-flex xs12>
@@ -28,9 +28,9 @@
                   <v-form @submit.prevent="updatePost">
                       <v-card-actions>
                         <v-spacer></v-spacer>
-                          <v-btn 
-                            color="blue darken-1" 
-                            flat 
+                          <v-btn
+                            color="blue darken-1"
+                            flat
                             @click="dialog=false">
                           Close</v-btn>
                           <v-btn
@@ -68,15 +68,15 @@ export default {
       likes: 0,
       file: null,
       dialog: false,
-      updatedField: '',
-      updatedValue: ''
+      updatedValue: this.updatedField,
+      updatedField: this.updatedValue,
     }
   },
   firestore () {
     return {
       mealItems: fsdb.collection('meals')
     }
-    
+
   },
   watch: {
     dialog (val){
