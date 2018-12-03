@@ -153,12 +153,11 @@ export default {
         console.log(errorMsg, error)
       })
     },
-
     likeItem: function () {
       var userRef = this.$firestoreRefs.users.doc(this.$store.state.user.uid)
       var itemRef = this.$firestoreRefs.progressPicItems.doc(this.item.id)
-      // var likersRef = this.$firestoreRefs.progressPicItems.doc(this.item.id).collection('likedBy')
       var arrayRef = firebase.firestore.FieldValue
+
       userRef.get()
         .then(user => {
           if(this.item.isLiked == false){
