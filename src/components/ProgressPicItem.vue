@@ -36,6 +36,7 @@
                       </div>
 
                       <v-card-actions align="right">
+<<<<<<< HEAD
                           <v-btn v-show="item.isLiked" flat color="red" @click="likeItem" icon>
                             <v-icon>favorite</v-icon>{{item.likes}}
                           </v-btn>
@@ -44,6 +45,16 @@
                           </v-btn>
                           <v-btn icon>
                             <v-icon>send</v-icon> {{likedByUser}}
+=======
+                          <v-btn v-show="isLiked" flat color="red" @click="likeItem" icon>
+                            <v-icon>favorite</v-icon>{{item.likes}}
+                          </v-btn>
+                          <v-btn v-show="!isLiked" @click="likeItem" icon>
+                            <v-icon>favorite</v-icon>{{item.likes}}
+                          </v-btn>
+                          <v-btn icon>
+                            <v-icon>send</v-icon> {{isLiked}}
+>>>>>>> d9350fe3fc4ef1d4a2b5717b28ad8a04fc39fc30
                           </v-btn>
                           <v-btn icon style="float:right" v-if="isOwner" flat color="red" @click="deleteItem">
                             <v-icon>delete</v-icon>
@@ -92,7 +103,8 @@ export default {
     return {
       imageUrl: '',
       likes: 0,
-      newComment: ''
+      isLiked: '',
+      newComment: '',
     }
   },
   mounted: function () {
@@ -100,7 +112,7 @@ export default {
   },
   firestore: {
     progressPicItems: fsdb.collection('progress-post'),
-    users: fsdb.collection('users')
+    users: fsdb.collection('users'),
   },
   computed: {
     photoDate: function () {
@@ -127,18 +139,30 @@ export default {
             result = array.includes(this.item.id)
             console.log(array.includes(this.item.id))
           }
+<<<<<<< HEAD
+=======
+          console.log(result)
+          this.isLiked = result
+>>>>>>> d9350fe3fc4ef1d4a2b5717b28ad8a04fc39fc30
           return result
         })
         .catch(error => {
           var errorMsg = 'Error fetching liked image from database'
           console.log(errorMsg, error)
       })
+<<<<<<< HEAD
     }
+=======
+    },
+    assignLike: function() {
+      this.isLiked = likedByUser();
+    },
+>>>>>>> d9350fe3fc4ef1d4a2b5717b28ad8a04fc39fc30
   },
   watch: {
     item: function (newData, oldData) {
       this.getImageUrl()
-    }
+    },
   },
   methods: {
     deleteItem: function () {
@@ -147,39 +171,77 @@ export default {
         var errorMsg = 'Error deleting item from database'
         console.log(errorMsg, error)
       })
+
       storage.ref().child(this.item.fileLocation).delete()
       .catch(error => {
         var errorMsg = 'Error deleting image file from storage'
         console.log(errorMsg, error)
       })
+
+      userRef.update({
+        "likedPhotos": arrayRef.arrayRemove(this.item.id) 
+      })
     },
+
     likeItem: function () {
       var userRef = this.$firestoreRefs.users.doc(this.$store.state.user.uid)
       var itemRef = this.$firestoreRefs.progressPicItems.doc(this.item.id)
+<<<<<<< HEAD
+=======
+      var likersRef = this.$firestoreRefs.progressPicItems.doc(this.item.id).collection('likedBy').doc(this.$store.state.user.uid)
+>>>>>>> d9350fe3fc4ef1d4a2b5717b28ad8a04fc39fc30
       var arrayRef = firebase.firestore.FieldValue
 
       userRef.get()
-        .then(user => {
-          if(this.item.isLiked == false){
+        .then(() => {
+          if(this.isLiked == false || this.isLiked == null){
             this.item.likes++
             userRef.update({
               "likedPhotos": arrayRef.arrayUnion(this.item.id) 
             })
+<<<<<<< HEAD
           this.item.isLiked = true
+=======
+            assignLike();
+>>>>>>> d9350fe3fc4ef1d4a2b5717b28ad8a04fc39fc30
           }else{
             this.item.likes--
             userRef.update({
-              "likedPhotos": arrayRef.arrayRemove(this.item.id) 
+              "likedPhotos": arrayRef.arrayRemove(this.item.id)
             })
-            this.item.isLiked = false
+            assignLike();
           }
             itemRef.update({likes: this.item.likes})
-            itemRef.update({isLiked: this.item.isLiked})
         })
         .catch(error => {
-          var errorMsg = 'Error liking image file in database'
+          var errorMsg = 'Error appending userID file in database'
           console.log(errorMsg, error)
         })
+<<<<<<< HEAD
+=======
+      
+
+      // likersRef.get()
+      //   .then(liker => {
+      //     //if user liked the photo and is not in the collection
+      //     if(this.item.isLiked == false && !liker.exists){
+      //       likersRef.set({
+      //         username: this.$store.state.user.username,
+      //         email: this.$store.state.user.email,
+      //         uid: this.$store.state.user.uid
+      //       })
+      //       this.item.isLiked = true
+      //     //if user unliked photo and is in collection 
+      //     }else{
+      //       likersRef.delete()
+      //       this.item.isLiked = false
+      //     }
+      //   })
+
+      //   itemRef.update({likes: this.item.likes})
+      //   itemRef.update({isLiked: this.item.isLiked})
+      //   })
+>>>>>>> d9350fe3fc4ef1d4a2b5717b28ad8a04fc39fc30
     },
 
     getImageUrl: function () {
