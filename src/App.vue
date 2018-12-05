@@ -24,6 +24,14 @@
           </v-list-tile-action>
           <v-list-tile-content>{{ item.title }}</v-list-tile-content>
         </v-list-tile>
+        
+        <v-list-tile to="/notifications">
+          <v-list-tile-action>
+            <v-icon>notifications</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>Notifications</v-list-tile-content>
+        </v-list-tile>
+        
         <v-list-tile @click="userSignOut" v-if="isAuthenticated">
           <v-list-tile-action>
             <v-icon>exit_to_app</v-icon>
@@ -53,7 +61,11 @@
           <v-icon left dark>{{ item.icon }}</v-icon>
           {{ item.title }}
         </v-btn>
-
+        
+        <v-btn icon to="/notifications">
+          <v-icon>notifications</v-icon>
+        </v-btn>
+        
         <v-menu bottom="bottom" left="left" offset-y="offset-y" attach="attach" v-if="isAuthenticated">
           <v-btn slot="activator" flat="flat">
             <v-icon left>person</v-icon>

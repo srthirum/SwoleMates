@@ -13,6 +13,7 @@ const routerOptions = [
   { path: '/home', component: 'Home', meta: { requiresAuth: true } },
   { path: '/nutritionUpload', component: 'Nutrition'},
   { path: '/user/:uid', component: 'User'},
+  { path: '/notifications', component: 'Notifications'},
   { path: '*', component: 'NotFound' }
 ]
 
