@@ -44,9 +44,6 @@
                       <v-spacer align="left">
                         &nbsp; &nbsp; &nbsp; {{item.food}}
                       </v-spacer>
-                      <v-spacer align="left">
-                        &nbsp; &nbsp; &nbsp; Calories: {{item.calories}}
-                      </v-spacer>
                       <v-spacer align="left" v-for="fact in item.nutrition" :key="fact.key">
                          &nbsp; &nbsp; &nbsp; {{ fact.attribute }}: {{ fact.val }}
                       </v-spacer>
