@@ -19,3 +19,18 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+## Serve setup to live hosted webpage
+
+``` bash
+# install dependencies
+npm install
+
+# build server code for deployment
+npm run-script build
+
+# save changes and push using git for deployment
+git add -A
+git commit -m "<whatever shit we just fuckin did>"
+git push heroku master
+'''
