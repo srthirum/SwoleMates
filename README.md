@@ -31,6 +31,6 @@ npm run-script build
 
 # save changes and push using git for deployment
 git add -A
-git commit -m "<whatever shit we just fuckin did>"
+git commit -m "<Bug fix #1213>"
 git push heroku master
 '''
